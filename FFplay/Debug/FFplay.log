@@ -1,0 +1,27 @@
+﻿FFplay.obj : error LNK2019: 无法解析的外部符号 "void __cdecl av_register_all(void)" (?av_register_all@@YAXXZ)，该符号在函数 _main 中被引用
+FFplay.obj : error LNK2019: 无法解析的外部符号 "int __cdecl avformat_open_input(struct AVFormatContext * *,char const *,struct AVInputFormat *,struct AVDictionary * *)" (?avformat_open_input@@YAHPAPAUAVFormatContext@@PBDPAUAVInputFormat@@PAPAUAVDictionary@@@Z)，该符号在函数 _main 中被引用
+./lib\avcodec.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\avfilter.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\avformat.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\avutil.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\postproc.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\swresample.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\swscale.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+./lib\avdevice.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\avcodec.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\avdevice.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\avfilter.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\avformat.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\avutil.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libavcodec.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libavdevice.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libavfilter.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libavformat.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libavutil.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libpostproc.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libswresample.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\libswscale.dll.a : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\postproc.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\swresample.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+lib\swscale.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+c:\users\kingsun\documents\visual studio 2015\Projects\FFplay\Debug\FFplay.exe : fatal error LNK1120: 2 个无法解析的外部命令
