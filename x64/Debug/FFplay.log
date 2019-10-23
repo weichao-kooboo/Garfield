@@ -1,5 +1,0 @@
-﻿  FFplay.cpp
-c:\users\wc132\desktop\garfield\videocollection\ffplay\ffplay\ffplay.cpp(6): error C2061: syntax error: identifier 'Uint8'
-c:\users\wc132\desktop\garfield\videocollection\ffplay\ffplay\include\libavutil\rational.h : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
-c:\users\wc132\desktop\garfield\videocollection\ffplay\ffplay\ffplay.cpp(51): warning C4018: '>': signed/unsigned mismatch
-c:\users\wc132\desktop\garfield\videocollection\ffplay\ffplay\ffplay.cpp(97): warning C4018: '<': signed/unsigned mismatch

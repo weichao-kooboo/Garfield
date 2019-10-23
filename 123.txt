@@ -1,0 +1,27 @@
+
+https://blog.csdn.net/leixiaohua1020/article/details/12952977
+learn ffmpeg
+https://trac.ffmpeg.org/wiki/Using%20libav*
+https://github.com/leandromoreira/ffmpeg-libav-tutorial#intro
+
+
+https://blog.csdn.net/bingqingsuimeng/article/details/9982107
+https://blog.csdn.net/achang21/article/details/77890961
+
+https://blog.csdn.net/leixiaohua1020/article/details/41211121
+
+
+
+http://ffmpeg.org/doxygen/trunk/cmdutils_8c_source.html#l02175
+http://ffmpeg.org/doxygen/trunk/group__lavd.html#ga7c90a3585267b55941ae2f7388c006b6
+http://ffmpeg.org/doxygen/trunk/group__lavu__dict.html#gaca5ff7c251e60bd13164d13c82f21b79
+http://ffmpeg.org/doxygen/trunk/aviocat_8c_source.html#l00034
+http://ffmpeg.org/doxygen/trunk/concatdec_8c_source.html#l00400
+
+ÂÛÌ³
+http://bbs.chinaffmpeg.com/forum.php?mod=forumdisplay&fid=45
+
+DTSºÍPTS
+https://www.cnblogs.com/samirchen/p/7071824.html
+
+https://blog.csdn.net/leixiaohua1020
