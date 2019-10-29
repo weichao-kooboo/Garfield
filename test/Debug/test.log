@@ -1,0 +1,32 @@
+﻿  pch.cpp
+c:\users\wc132\desktop\总结\video\test\test\include\libavutil\rational.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  test.cpp
+c:\users\wc132\desktop\总结\video\test\test\test.cpp(45): warning C4018: “<”: 有符号/无符号不匹配
+test.obj : error LNK2019: 无法解析的外部符号 _av_get_picture_type_char，该符号在函数 _decode_packet 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_frame_alloc，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_frame_free，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_alloc_context3，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_free_context，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_parameters_to_context，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_open2，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_packet_alloc，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_packet_free，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_packet_unref，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_find_decoder，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_send_packet，该符号在函数 _decode_packet 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avcodec_receive_frame，该符号在函数 _decode_packet 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avformat_alloc_context，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avformat_free_context，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avformat_open_input，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avformat_find_stream_info，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _av_read_frame，该符号在函数 _main 中被引用
+test.obj : error LNK2019: 无法解析的外部符号 _avformat_close_input，该符号在函数 _main 中被引用
+.\lib\avcodec.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\avdevice.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\avfilter.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\avformat.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\avutil.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\postproc.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\swresample.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+.\lib\swscale.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+C:\Users\wc132\Desktop\总结\video\test\Debug\test.exe : fatal error LNK1120: 19 个无法解析的外部命令
