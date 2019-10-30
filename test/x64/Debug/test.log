@@ -1,0 +1,15 @@
+﻿  pch.cpp
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\include\libavutil\rational.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  FFmpegMethods.cpp
+  ShowDevices.cpp
+  test.cpp
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(62): warning C4244: “=”: 从“int64_t”转换到“int”，可能丢失数据
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(74): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(262): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(279): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(337): warning C4244: “初始化”: 从“double”转换到“int64_t”，可能丢失数据
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(339): warning C4244: “=”: 从“double”转换到“int64_t”，可能丢失数据
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(341): warning C4244: “=”: 从“double”转换到“int64_t”，可能丢失数据
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\test\test.cpp(350): warning C4244: “参数”: 从“int64_t”转换到“unsigned int”，可能丢失数据
+  正在生成代码...
+  test.vcxproj -> C:\Users\wc132\Desktop\myselfProject\Garfield\VideoCollection\x64\Debug\test.exe

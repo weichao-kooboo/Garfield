@@ -9,5 +9,9 @@ extern "C" {
 int main(int argc, const char *argv[])
 {
 	sp_strerror_init();
+	/*u_char    errstr[1024];
+	u_char   *p;
+	p = sp_cpymem(errstr, "streamPusher: ", 14);
+	(void)sp_write_console(sp_stderr, errstr, p - errstr);*/
 	return 0;
 }

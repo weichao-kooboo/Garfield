@@ -21,13 +21,25 @@
     <ClInclude Include="core\sp_core.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="core\errno.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="core\export.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\win_errno.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\win_files.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\win_config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\win_atomic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="core\sp_log.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\sp_rbtree.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,10 +47,19 @@
     <ClCompile Include="StreamPusher.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core\errno.c">
+    <ClCompile Include="core\win_errno.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\win_files.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\sp_string.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="core\sp_log.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\sp_rbtree.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
