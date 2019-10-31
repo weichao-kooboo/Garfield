@@ -1,4 +1,0 @@
-﻿  sp_log.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(20): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-  StreamPusher.vcxproj -> C:\Users\wc132\Desktop\myselfProject\Garfield\VideoCollection\x64\Debug\StreamPusher.exe
