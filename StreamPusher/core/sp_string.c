@@ -1,6 +1,9 @@
 #pragma once
 #include "sp_string.h"
 
+static u_char *sp_sprintf_num(u_char *buf, u_char *last, uint64_t ui64,
+	u_char zero, sp_uint_t hexadecimal, sp_uint_t width);
+
 
 u_char *
 sp_vslprintf(u_char *buf, u_char *last, const char *fmt, va_list args)
@@ -341,4 +344,120 @@ sp_vslprintf(u_char *buf, u_char *last, const char *fmt, va_list args)
 	}
 
 	return buf;
+}
+
+
+static u_char *
+sp_sprintf_num(u_char *buf, u_char *last, uint64_t ui64, u_char zero,
+	sp_uint_t hexadecimal, sp_uint_t width)
+{
+	u_char         *p, temp[SP_INT64_LEN + 1];
+	/*
+	 * we need temp[SP_INT64_LEN] only,
+	 * but icc issues the warning
+	 */
+	size_t          len;
+	uint32_t        ui32;
+	static u_char   hex[] = "0123456789abcdef";
+	static u_char   HEX[] = "0123456789ABCDEF";
+
+	p = temp + SP_INT64_LEN;
+
+	if (hexadecimal == 0) {
+
+		if (ui64 <= (uint64_t)SP_MAX_UINT32_VALUE) {
+
+			/*
+			 * To divide 64-bit numbers and to find remainders
+			 * on the x86 platform gcc and icc call the libc functions
+			 * [u]divdi3() and [u]moddi3(), they call another function
+			 * in its turn.  On FreeBSD it is the qdivrem() function,
+			 * its source code is about 170 lines of the code.
+			 * The glibc counterpart is about 150 lines of the code.
+			 *
+			 * For 32-bit numbers and some divisors gcc and icc use
+			 * a inlined multiplication and shifts.  For example,
+			 * unsigned "i32 / 10" is compiled to
+			 *
+			 *     (i32 * 0xCCCCCCCD) >> 35
+			 */
+
+			ui32 = (uint32_t)ui64;
+
+			do {
+				*--p = (u_char)(ui32 % 10 + '0');
+			} while (ui32 /= 10);
+
+		}
+		else {
+			do {
+				*--p = (u_char)(ui64 % 10 + '0');
+			} while (ui64 /= 10);
+		}
+
+	}
+	else if (hexadecimal == 1) {
+
+		do {
+
+			/* the "(uint32_t)" cast disables the BCC's warning */
+			*--p = hex[(uint32_t)(ui64 & 0xf)];
+
+		} while (ui64 >>= 4);
+
+	}
+	else { /* hexadecimal == 2 */
+
+		do {
+
+			/* the "(uint32_t)" cast disables the BCC's warning */
+			*--p = HEX[(uint32_t)(ui64 & 0xf)];
+
+		} while (ui64 >>= 4);
+	}
+
+	/* zero or space padding */
+
+	len = (temp + SP_INT64_LEN) - p;
+
+	while (len++ < width && buf < last) {
+		*buf++ = zero;
+	}
+
+	/* number safe copy */
+
+	len = (temp + SP_INT64_LEN) - p;
+
+	if (buf + len > last) {
+		len = last - buf;
+	}
+
+	return sp_cpymem(buf, p, len);
+}
+
+
+u_char * sp_cdecl
+sp_slprintf(u_char *buf, u_char *last, const char *fmt, ...)
+{
+	u_char   *p;
+	va_list   args;
+
+	va_start(args, fmt);
+	p = sp_vslprintf(buf, last, fmt, args);
+	va_end(args);
+
+	return p;
+}
+
+u_char * sp_cdecl
+sp_snprintf(u_char *buf, size_t max, const char *fmt, ...)
+{
+	u_char   *p;
+	va_list   args;
+
+	va_start(args, fmt);
+	p = sp_vslprintf(buf, buf + max, fmt, args);
+	va_end(args);
+
+	return p;
 }

@@ -1,31 +1,4 @@
 ﻿  sp_log.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
+c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(20): warning C4005: “SP_ERROR”: 宏重定义
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-  sp_rbtree.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-  sp_string.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_string.c(255): warning C4013: “sp_sprintf_num”未定义；假设外部返回 int
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_string.c(255): warning C4047: “=”:“u_char *”与“int”的间接级别不同
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_string.c(262): warning C4047: “=”:“u_char *”与“int”的间接级别不同
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_string.c(333): warning C4047: “=”:“u_char *”与“int”的间接级别不同
-  win_errno.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_errno.c(17): warning C4133: “函数”: 从“char *”到“LPWSTR”的类型不兼容
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_errno.c(17): warning C4267: “函数”: 从“size_t”转换到“DWORD”，可能丢失数据
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_errno.c(23): warning C4133: “函数”: 从“char *”到“LPWSTR”的类型不兼容
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_errno.c(23): warning C4267: “函数”: 从“size_t”转换到“DWORD”，可能丢失数据
-  win_files.c
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_files.c(7): warning C4267: “函数”: 从“size_t”转换到“DWORD”，可能丢失数据
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\win_files.c(9): warning C4267: “函数”: 从“size_t”转换到“DWORD”，可能丢失数据
-  正在生成代码...
-  StreamPusher.cpp
-c:\users\wc132\desktop\myselfproject\garfield\videocollection\streampusher\core\sp_core.h(17): warning C4005: “SP_ERROR”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\um\wingdi.h(551): note: 参见“SP_ERROR”的前一个定义
-sp_string.obj : error LNK2019: 无法解析的外部符号 sp_sprintf_num，该符号在函数 sp_vslprintf 中被引用
-C:\Users\wc132\Desktop\myselfProject\Garfield\VideoCollection\x64\Debug\StreamPusher.exe : fatal error LNK1120: 1 个无法解析的外部命令
+  StreamPusher.vcxproj -> C:\Users\wc132\Desktop\myselfProject\Garfield\VideoCollection\x64\Debug\StreamPusher.exe

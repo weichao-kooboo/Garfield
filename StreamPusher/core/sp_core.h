@@ -5,6 +5,9 @@
 #include <Windows.h>
 #include "win_config.h"
 
+#define SP_MAX_UINT32_VALUE  (uint32_t) 0xffffffff
+#define SP_MAX_INT32_VALUE   (uint32_t) 0x7fffffff
+
 #define LF     (u_char) '\n'
 #define CR     (u_char) '\r'
 #define CRLF   "\r\n"
@@ -49,5 +52,7 @@ typedef intptr_t        sp_flag_t;
 #include "win_atomic.h"
 #include "sp_string.h"
 #include "sp_rbtree.h"
+#include "win_errno.h"
+#include "win_files.h"
 
 #endif // !_SP_CORE_H_INCLUDED_

@@ -8,6 +8,10 @@ typedef HANDLE                      sp_fd_t;
 typedef BY_HANDLE_FILE_INFORMATION  sp_file_info_t;
 typedef uint64_t                    sp_file_uniq_t;
 
+#define sp_linefeed(p)             *p++ = CR; *p++ = LF;
+#define SP_LINEFEED_SIZE           2
+#define SP_LINEFEED                CRLF
+
 ssize_t sp_write_console(sp_fd_t fd, void *buf, size_t size);
 
 #define sp_stdout               GetStdHandle(STD_OUTPUT_HANDLE)

@@ -24,8 +24,8 @@ u_char *sp_strerror(sp_err_t err, u_char *errstr, size_t size) {
 	}
 
 	if (len == 0) {
-		//return ngx_snprintf(errstr, size,
-		//	"FormatMessage() error:(%d)", GetLastError());
+		return sp_snprintf(errstr, size,
+			"FormatMessage() error:(%d)", GetLastError());
 	}
 
 	/* remove ".\r\n\0" */

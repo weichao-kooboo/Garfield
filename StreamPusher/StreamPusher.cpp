@@ -9,9 +9,6 @@ extern "C" {
 int main(int argc, const char *argv[])
 {
 	sp_strerror_init();
-	/*u_char    errstr[1024];
-	u_char   *p;
-	p = sp_cpymem(errstr, "streamPusher: ", 14);
-	(void)sp_write_console(sp_stderr, errstr, p - errstr);*/
+	sp_log_stderr(2, "this is the tets %s", "hello");
 	return 0;
 }
