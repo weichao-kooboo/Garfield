@@ -55,7 +55,8 @@ typedef DWORD                      sp_err_t;
 #define SP_EMFILE                 WSAEMFILE
 #define SP_ENFILE                 WSAEMFILE
 
-
+//通过err取出系统错误
 u_char *sp_strerror(sp_err_t err, u_char *errstr, size_t size);
+//初始化所有系统错误并保存
 sp_int_t  sp_strerror_init(void);
 #endif // !_SP_ERRNO_H_INCLUDED_

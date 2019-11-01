@@ -12,6 +12,7 @@ typedef uint64_t                    sp_file_uniq_t;
 #define SP_LINEFEED_SIZE           2
 #define SP_LINEFEED                CRLF
 
+//½«buffÐ´Èëµ½fd
 ssize_t sp_write_console(sp_fd_t fd, void *buf, size_t size);
 
 #define sp_stdout               GetStdHandle(STD_OUTPUT_HANDLE)
