@@ -42,6 +42,9 @@
     <ClInclude Include="core\sp_rbtree.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\win_alloc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StreamPusher.cpp">
@@ -60,6 +63,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="core\sp_rbtree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\win_alloc.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

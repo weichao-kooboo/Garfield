@@ -50,6 +50,7 @@ typedef intptr_t        sp_flag_t;
 #endif
 
 #include "win_atomic.h"
+#include "win_alloc.h"
 #include "sp_string.h"
 #include "sp_rbtree.h"
 #include "win_errno.h"
