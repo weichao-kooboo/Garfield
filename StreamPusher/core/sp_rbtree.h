@@ -7,10 +7,6 @@
 typedef sp_uint_t  sp_rbtree_key_t;
 typedef sp_int_t   sp_rbtree_key_int_t;
 
-typedef sp_rbtree_key_t      sp_msec_t;
-typedef sp_rbtree_key_int_t  sp_msec_int_t;
-
-
 typedef struct sp_rbtree_node_s  sp_rbtree_node_t;
 
 struct sp_rbtree_node_s {

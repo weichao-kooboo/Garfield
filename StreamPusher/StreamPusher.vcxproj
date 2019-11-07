@@ -151,26 +151,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="core\sp_log.h" />
     <ClInclude Include="core\sp_rbtree.h" />
+    <ClInclude Include="core\sp_string.h" />
     <ClInclude Include="core\sp_times.h" />
     <ClInclude Include="core\win_alloc.h" />
     <ClInclude Include="core\win_atomic.h" />
     <ClInclude Include="core\win_config.h" />
-    <ClInclude Include="core\win_errno.h" />
     <ClInclude Include="core\export.h" />
     <ClInclude Include="core\sp_core.h" />
-    <ClInclude Include="core\sp_string.h" />
+    <ClInclude Include="core\win_errno.h" />
     <ClInclude Include="core\win_files.h" />
+    <ClInclude Include="core\win_time.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core\sp_log.c" />
     <ClCompile Include="core\sp_rbtree.c" />
     <ClCompile Include="core\sp_string.c" />
     <ClCompile Include="core\sp_times.c" />
     <ClCompile Include="core\win_alloc.c" />
     <ClCompile Include="core\win_errno.c" />
     <ClCompile Include="core\win_files.c" />
+    <ClCompile Include="core\win_time.c" />
     <ClCompile Include="StreamPusher.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

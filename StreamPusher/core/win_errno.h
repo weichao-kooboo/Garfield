@@ -2,8 +2,8 @@
 #ifndef _SP_WIN_ERRNO_H_INCLUDED_
 #define _SP_WIN_ERRNO_H_INCLUDED_
 
-#include "sp_core.h"
-
+#include "win_alloc.h"
+#include "sp_string.h"
 
 typedef DWORD                      sp_err_t;
 

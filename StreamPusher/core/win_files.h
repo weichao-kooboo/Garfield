@@ -2,7 +2,7 @@
 #ifndef _SP_WIN_FILES_H_INCLUDED_
 #define _SP_WIN_FILES_H_INCLUDED_
 
-#include "sp_core.h"
+#include "win_errno.h"
 
 #define SP_UTF16_BUFLEN  256
 #define SP_INVALID_FILE            INVALID_HANDLE_VALUE

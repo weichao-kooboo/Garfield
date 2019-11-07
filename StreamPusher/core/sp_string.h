@@ -1,7 +1,8 @@
 #pragma once
 #ifndef _SP_STRING_H_INCLUDED_
 #define _SP_STRING_H_INCLUDED_
-#include "sp_core.h"
+#include "win_atomic.h"
+#include "win_time.h"
 
 typedef struct {
 	size_t      len;

@@ -8,7 +8,7 @@ extern "C" {
 
 int main(int argc, const char *argv[])
 {
-	sp_strerror_init();
-	sp_log_stderr(0, "this is the tets %s", "hello");
+	/*sp_strerror_init();
+	sp_log_stderr(0, "this is the tets %s", "hello");*/
 	return 0;
 }

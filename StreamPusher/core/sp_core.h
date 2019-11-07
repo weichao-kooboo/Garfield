@@ -49,11 +49,4 @@ typedef intptr_t        sp_flag_t;
 #define SP_SYS_NERR  135
 #endif
 
-#include "win_atomic.h"
-#include "win_alloc.h"
-#include "sp_string.h"
-#include "sp_rbtree.h"
-#include "win_errno.h"
-#include "win_files.h"
-
 #endif // !_SP_CORE_H_INCLUDED_
