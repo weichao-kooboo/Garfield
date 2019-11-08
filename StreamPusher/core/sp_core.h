@@ -49,4 +49,7 @@ typedef intptr_t        sp_flag_t;
 #define SP_SYS_NERR  135
 #endif
 
+typedef struct sp_open_file_s sp_open_file_t;
+typedef struct sp_log_s sp_log_t;
+
 #endif // !_SP_CORE_H_INCLUDED_
