@@ -39,4 +39,6 @@ ssize_t sp_write_console(sp_fd_t fd, void *buf, size_t size);
 #define sp_set_stderr(fd)       SetStdHandle(STD_ERROR_HANDLE, fd)
 #define sp_set_stderr_n         "SetStdHandle(STD_ERROR_HANDLE)"
 
+#define sp_path_separator(c)       ((c) == '/' || (c) == '\\')
+
 #endif // !_SP_WIN_FILES_H_INCLUDED_

@@ -1,6 +1,10 @@
 #pragma once
 #include "sp_log.h"
 
+static sp_log_t        sp_log;
+static sp_open_file_t  sp_log_file;
+sp_uint_t              sp_use_stderr = 1;
+
 void sp_log_stderr(sp_err_t err, const char * fmt, ...)
 {
 	u_char   *p, *last;

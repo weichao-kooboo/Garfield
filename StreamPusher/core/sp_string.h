@@ -36,4 +36,6 @@ u_char * sp_cdecl sp_slprintf(u_char *buf, u_char *last, const char *fmt,
 u_char * sp_cdecl sp_snprintf(u_char *buf, size_t max, const char *fmt, ...);
 u_char * sp_cdecl sp_sprintf(u_char *buf, const char *fmt, ...);
 
+u_char *sp_cpystrn(u_char *dst, u_char *src, size_t n);
+
 #endif // !_SP_STRING_H_INCLUDED_

@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
+    <ClInclude Include="core\sp_conf_file.h" />
     <ClInclude Include="core\sp_log.h" />
     <ClInclude Include="core\sp_rbtree.h" />
     <ClInclude Include="core\sp_string.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="core\sp_core.h" />
     <ClInclude Include="core\win_errno.h" />
     <ClInclude Include="core\win_files.h" />
+    <ClInclude Include="core\win_os.h" />
     <ClInclude Include="core\win_time.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +174,7 @@
     <ClCompile Include="core\sp_times.c" />
     <ClCompile Include="core\win_alloc.c" />
     <ClCompile Include="core\win_errno.c" />
+    <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
     <ClCompile Include="StreamPusher.cpp" />

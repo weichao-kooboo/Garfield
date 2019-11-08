@@ -3,7 +3,7 @@
 #define _SP_LOG_H_INCLUDED_
 
 #include "win_files.h"
-
+#include "sp_conf_file.h"
 
 #define SP_LOG_STDERR            0
 #define SP_LOG_EMERG             1
@@ -28,9 +28,28 @@
 #define SP_LOG_DEBUG_CONNECTION  0x80000000
 #define SP_LOG_DEBUG_ALL         0x7ffffff0
 
-typedef struct{
-	
-}sp_log_t;
+
+typedef u_char *(*sp_log_handler_pt) (sp_log_t *log, u_char *buf, size_t len);
+typedef void(*sp_log_writer_pt) (sp_log_t *log, sp_uint_t level,
+	u_char *buf, size_t len);
+
+struct sp_log_s {
+	sp_uint_t           log_level;
+	sp_open_file_t     *file;
+
+	sp_atomic_uint_t    connection;
+
+	time_t               disk_full_time;
+
+	sp_log_handler_pt   handler;
+	void                *data;
+
+	sp_log_writer_pt    writer;
+	void                *wdata;
+
+	char                *action;
+	sp_log_t	*next;
+};
 
 #define SP_MAX_ERROR_STR   2048
 

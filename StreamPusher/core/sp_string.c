@@ -4,7 +4,6 @@
 static u_char *sp_sprintf_num(u_char *buf, u_char *last, uint64_t ui64,
 	u_char zero, sp_uint_t hexadecimal, sp_uint_t width);
 
-
 u_char *
 sp_vslprintf(u_char *buf, u_char *last, const char *fmt, va_list args)
 {
@@ -346,7 +345,6 @@ sp_vslprintf(u_char *buf, u_char *last, const char *fmt, va_list args)
 	return buf;
 }
 
-
 static u_char *
 sp_sprintf_num(u_char *buf, u_char *last, uint64_t ui64, u_char zero,
 	sp_uint_t hexadecimal, sp_uint_t width)
@@ -435,7 +433,6 @@ sp_sprintf_num(u_char *buf, u_char *last, uint64_t ui64, u_char zero,
 	return sp_cpymem(buf, p, len);
 }
 
-
 u_char * sp_cdecl
 sp_slprintf(u_char *buf, u_char *last, const char *fmt, ...)
 {
@@ -461,7 +458,6 @@ sp_snprintf(u_char *buf, size_t max, const char *fmt, ...)
 
 	return p;
 }
-
 
 uint32_t
 sp_utf8_decode(u_char **p, size_t n)
@@ -522,7 +518,6 @@ sp_utf8_decode(u_char **p, size_t n)
 	return 0xffffffff;
 }
 
-
 u_char * sp_cdecl
 sp_sprintf(u_char *buf, const char *fmt, ...)
 {
@@ -534,4 +529,27 @@ sp_sprintf(u_char *buf, const char *fmt, ...)
 	va_end(args);
 
 	return p;
+}
+
+u_char *
+sp_cpystrn(u_char *dst, u_char *src, size_t n)
+{
+	if (n == 0) {
+		return dst;
+	}
+
+	while (--n) {
+		*dst = *src;
+
+		if (*dst == '\0') {
+			return dst;
+		}
+
+		dst++;
+		src++;
+	}
+
+	*dst = '\0';
+
+	return dst;
 }
