@@ -61,9 +61,7 @@ sp_log_errno(u_char *buf, u_char *last, sp_err_t err)
 	return buf;
 }
 
-
-sp_log_t *
-sp_log_init(u_char *prefix)
+sp_log_t * sp_log_init(u_char * prefix)
 {
 	u_char  *p, *name;
 	size_t   nlen, plen;
