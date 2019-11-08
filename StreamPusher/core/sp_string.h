@@ -34,5 +34,6 @@ u_char *sp_vslprintf(u_char *buf, u_char *last, const char *fmt, va_list args);
 u_char * sp_cdecl sp_slprintf(u_char *buf, u_char *last, const char *fmt,
 	...);
 u_char * sp_cdecl sp_snprintf(u_char *buf, size_t max, const char *fmt, ...);
+u_char * sp_cdecl sp_sprintf(u_char *buf, const char *fmt, ...);
 
 #endif // !_SP_STRING_H_INCLUDED_

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="core\sp_log.h" />
     <ClInclude Include="core\sp_rbtree.h" />
     <ClInclude Include="core\sp_string.h" />
     <ClInclude Include="core\sp_times.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="core\win_time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="core\sp_log.c" />
     <ClCompile Include="core\sp_rbtree.c" />
     <ClCompile Include="core\sp_string.c" />
     <ClCompile Include="core\sp_times.c" />

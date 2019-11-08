@@ -521,3 +521,17 @@ sp_utf8_decode(u_char **p, size_t n)
 
 	return 0xffffffff;
 }
+
+
+u_char * sp_cdecl
+sp_sprintf(u_char *buf, const char *fmt, ...)
+{
+	u_char   *p;
+	va_list   args;
+
+	va_start(args, fmt);
+	p = sp_vslprintf(buf, (void *)-1, fmt, args);
+	va_end(args);
+
+	return p;
+}

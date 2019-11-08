@@ -1,7 +1,8 @@
 #pragma once
 #ifndef _SP_LOG_H_INCLUDED_
 #define _SP_LOG_H_INCLUDED_
-#include "sp_core.h"
+
+#include "win_files.h"
 
 #define SP_MAX_ERROR_STR   2048
 

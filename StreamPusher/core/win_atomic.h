@@ -30,6 +30,7 @@ typedef volatile sp_atomic_uint_t  sp_atomic_t;
 
 #endif
 
+#define sp_memory_barrier()
 
 #define sp_trylock(lock)  (*(lock) == 0 && sp_atomic_cmp_set(lock, 0, 1))
 #define sp_unlock(lock)    *(lock) = 0
