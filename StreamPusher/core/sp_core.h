@@ -3,6 +3,7 @@
 #define _SP_CORE_H_INCLUDED_
 
 #include <Windows.h>
+#include "local_config.h"
 #include "win_config.h"
 
 #define SP_MAX_UINT32_VALUE  (uint32_t) 0xffffffff

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="core\local_config.h" />
     <ClInclude Include="core\sp_log.h" />
     <ClInclude Include="core\sp_rbtree.h" />
     <ClInclude Include="core\sp_string.h" />
