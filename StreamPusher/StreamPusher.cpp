@@ -8,12 +8,24 @@ extern "C" {
 
 int main(int argc, const char *argv[])
 {
-	sp_strerror_init();
-	sp_log_stderr(0, "this is the tets %s", "hello");
+	sp_log_t	*log;
+
+	if (sp_strerror_init() != SP_OK) {
+		return 1;
+	}
+	//sp_log_stderr(0, "this is the tets %s", "hello");
+	sp_time_init();
+
+	sp_pid = sp_getpid();
 
 	u_char *p = NULL;
-	sp_log_init(p);
+	log = sp_log_init(p);
+	if (log == NULL) {
+		return 1;
+	}
 
-	//sp_pid = sp_getpid();
+
+
+
 	return 0;
 }
