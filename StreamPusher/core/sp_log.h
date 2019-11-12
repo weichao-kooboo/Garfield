@@ -57,6 +57,13 @@ struct sp_log_s {
 
 #define SP_MAX_ERROR_STR   2048
 
+
+static sp_inline void
+sp_write_stderr(char *text)
+{
+	(void)sp_write_fd(sp_stderr, text, sp_strlen(text));
+}
+
 //将系统错误输出到输出到控制台
 void sp_log_stderr(sp_err_t err, const char *fmt, ...);
 //返回err代表的系统错误,添加到buf后面

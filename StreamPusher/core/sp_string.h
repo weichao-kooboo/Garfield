@@ -25,6 +25,8 @@ typedef struct {
 #define sp_memcpy(dst, src, n)   (void) memcpy(dst, src, n)
 #define sp_cpymem(dst, src, n)   (((u_char *) memcpy(dst, src, n)) + (n))
 
+/* msvc and icc7 compile strcmp() to inline loop */
+#define sp_strcmp(s1, s2)  strcmp((const char *) s1, (const char *) s2)
 
 #define sp_strlen(s)       strlen((const char *) s)
 
