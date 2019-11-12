@@ -4,6 +4,10 @@
 
 #include "win_files.h"
 #include "sp_conf_file.h"
+#include "sp_times.h"
+#include "sp_process.h"
+
+#define SP_TID_T_FMT               "%ud"
 
 #define SP_LOG_STDERR            0
 #define SP_LOG_EMERG             1
@@ -59,5 +63,51 @@ void sp_log_stderr(sp_err_t err, const char *fmt, ...);
 u_char *sp_log_errno(u_char *buf, u_char *last, sp_err_t err);
 
 sp_log_t *sp_log_init(u_char *prefix);
+
+#if (SP_HAVE_C99_VARIADIC_MACROS)
+
+#define SP_HAVE_VARIADIC_MACROS  1
+
+#define sp_log_error(level, log, ...)                                        \
+    if ((log)->log_level >= level) sp_log_error_core(level, log, __VA_ARGS__)
+
+void sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, ...);
+
+#define sp_log_debug(level, log, ...)                                        \
+    if ((log)->log_level & level)                                             \
+        sp_log_error_core(SP_LOG_DEBUG, log, __VA_ARGS__)
+
+/*********************************/
+
+#elif (SP_HAVE_GCC_VARIADIC_MACROS)
+
+#define SP_HAVE_VARIADIC_MACROS  1
+
+#define sp_log_error(level, log, args...)                                    \
+    if ((log)->log_level >= level) sp_log_error_core(level, log, args)
+
+void sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, ...);
+
+#define sp_log_debug(level, log, args...)                                    \
+    if ((log)->log_level & level)                                             \
+        sp_log_error_core(SP_LOG_DEBUG, log, args)
+
+/*********************************/
+
+#else /* no variadic macros */
+
+#define SP_HAVE_VARIADIC_MACROS  0
+
+void sp_cdecl sp_log_error(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, ...);
+void sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, va_list args);
+void sp_cdecl sp_log_debug_core(sp_log_t *log, sp_err_t err,
+	const char *fmt, ...);
+
+
+#endif /* variadic macros */
 
 #endif // !_SP_LOG_H_INCLUDED_

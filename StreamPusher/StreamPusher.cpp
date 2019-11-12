@@ -13,5 +13,7 @@ int main(int argc, const char *argv[])
 
 	u_char *p = NULL;
 	sp_log_init(p);
+
+	//sp_pid = sp_getpid();
 	return 0;
 }

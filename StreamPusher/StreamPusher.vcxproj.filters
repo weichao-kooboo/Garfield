@@ -28,5 +28,6 @@
     <ClInclude Include="core\win_files.h" />
     <ClInclude Include="core\win_time.h" />
     <ClInclude Include="core\win_os.h" />
+    <ClInclude Include="core\sp_process.h" />
   </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@ typedef struct {
 } sp_variable_value_t;
 
 #define sp_string(str)     { sizeof(str) - 1, (u_char *) str }
+#define sp_null_string     { 0, NULL }
 #define sp_memcpy(dst, src, n)   (void) memcpy(dst, src, n)
 #define sp_cpymem(dst, src, n)   (((u_char *) memcpy(dst, src, n)) + (n))
 

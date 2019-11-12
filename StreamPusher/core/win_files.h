@@ -33,6 +33,9 @@ sp_fd_t sp_open_file(u_char *name, u_long mode, u_long create, u_long access);
 
 //将buff写入到fd
 ssize_t sp_write_console(sp_fd_t fd, void *buf, size_t size);
+//将buff写入到文件
+ssize_t sp_write_fd(sp_fd_t fd, void *buf, size_t size);
+#define sp_write_fd_n              "WriteFile()"
 
 #define sp_stdout               GetStdHandle(STD_OUTPUT_HANDLE)
 #define sp_stderr               GetStdHandle(STD_ERROR_HANDLE)

@@ -296,3 +296,15 @@ sp_utf8_to_utf16(u_short *utf16, u_char *utf8, size_t *len)
 
 	/* unreachable */
 }
+
+ssize_t
+sp_write_fd(sp_fd_t fd, void *buf, size_t size)
+{
+	u_long  n;
+
+	if (WriteFile(fd, buf, size, &n, NULL) != 0) {
+		return (size_t)n;
+	}
+
+	return -1;
+}

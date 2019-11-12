@@ -4,6 +4,19 @@
 static sp_log_t        sp_log;
 static sp_open_file_t  sp_log_file;
 sp_uint_t              sp_use_stderr = 1;
+sp_pid_t            sp_pid;
+
+static sp_str_t err_levels[] = {
+	sp_null_string,
+	sp_string("emerg"),
+	sp_string("alert"),
+	sp_string("crit"),
+	sp_string("error"),
+	sp_string("warn"),
+	sp_string("notice"),
+	sp_string("info"),
+	sp_string("debug")
+};
 
 void sp_log_stderr(sp_err_t err, const char * fmt, ...)
 {
@@ -145,3 +158,153 @@ sp_log_t * sp_log_init(u_char * prefix)
 
 	return &sp_log;
 }
+
+
+#if (SP_HAVE_VARIADIC_MACROS)
+
+void
+sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, ...)
+
+#else
+
+void
+sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, va_list args)
+
+#endif
+{
+#if (SP_HAVE_VARIADIC_MACROS)
+	va_list      args;
+#endif
+	u_char      *p, *last, *msg;
+	ssize_t      n;
+	sp_uint_t   wrote_stderr, debug_connection;
+	u_char       errstr[SP_MAX_ERROR_STR];
+
+	last = errstr + SP_MAX_ERROR_STR;
+
+	p = sp_cpymem(errstr, sp_cached_err_log_time.data,
+		sp_cached_err_log_time.len);
+
+	p = sp_slprintf(p, last, " [%V] ", &err_levels[level]);
+
+	/* pid#tid */
+	// ?暂时不加线程名称
+	p = sp_slprintf(p, last, "%P: ",
+		sp_log_pid);
+
+	if (log->connection) {
+		p = sp_slprintf(p, last, "*%uA ", log->connection);
+	}
+
+	msg = p;
+
+#if (SP_HAVE_VARIADIC_MACROS)
+
+	va_start(args, fmt);
+	p = sp_vslprintf(p, last, fmt, args);
+	va_end(args);
+
+#else
+
+	p = sp_vslprintf(p, last, fmt, args);
+
+#endif
+
+	if (err) {
+		p = sp_log_errno(p, last, err);
+	}
+
+	if (level != SP_LOG_DEBUG && log->handler) {
+		p = log->handler(log, p, last - p);
+	}
+
+	if (p > last - SP_LINEFEED_SIZE) {
+		p = last - SP_LINEFEED_SIZE;
+	}
+
+	sp_linefeed(p);
+
+	wrote_stderr = 0;
+	debug_connection = (log->log_level & SP_LOG_DEBUG_CONNECTION) != 0;
+
+	while (log) {
+
+		if (log->log_level < level && !debug_connection) {
+			break;
+		}
+
+		if (log->writer) {
+			log->writer(log, level, errstr, p - errstr);
+			goto next;
+		}
+
+		if (sp_time() == log->disk_full_time) {
+
+			/*
+			 * on FreeBSD writing to a full filesystem with enabled softupdates
+			 * may block process for much longer time than writing to non-full
+			 * filesystem, so we skip writing to a log for one second
+			 */
+
+			goto next;
+		}
+
+		n = sp_write_fd(log->file->fd, errstr, p - errstr);
+
+		if (n == -1 && sp_errno == SP_ENOSPC) {
+			log->disk_full_time = sp_time();
+		}
+
+		if (log->file->fd == sp_stderr) {
+			wrote_stderr = 1;
+		}
+
+	next:
+
+		log = log->next;
+	}
+
+	if (!sp_use_stderr
+		|| level > SP_LOG_WARN
+		|| wrote_stderr)
+	{
+		return;
+	}
+
+	msg -= (7 + err_levels[level].len + 3);
+
+	(void)sp_sprintf(msg, "nginx: [%V] ", &err_levels[level]);
+
+	(void)sp_write_console(sp_stderr, msg, p - msg);
+}
+
+
+#if !(SP_HAVE_VARIADIC_MACROS)
+
+void sp_cdecl
+sp_log_error(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, ...)
+{
+	va_list  args;
+
+	if (log->log_level >= level) {
+		va_start(args, fmt);
+		sp_log_error_core(level, log, err, fmt, args);
+		va_end(args);
+	}
+}
+
+
+void sp_cdecl
+sp_log_debug_core(sp_log_t *log, sp_err_t err, const char *fmt, ...)
+{
+	va_list  args;
+
+	va_start(args, fmt);
+	sp_log_error_core(SP_LOG_DEBUG, log, err, fmt, args);
+	va_end(args);
+}
+
+#endif
