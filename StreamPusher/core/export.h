@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SP_EXPORT_H_INCLUDED_
-#define _SP_EXPORT_H_INCLUDED_
+#ifndef _SP_CORE_EXPORT_H_INCLUDED_
+#define _SP_CORE_EXPORT_H_INCLUDED_
 
 #include "sp_log.h"
 #include "sp_conf_file.h"

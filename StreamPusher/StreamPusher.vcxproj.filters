@@ -11,6 +11,7 @@
     <ClCompile Include="core\win_time.c" />
     <ClCompile Include="StreamPusher.cpp" />
     <ClCompile Include="core\win_event_log.c" />
+    <ClCompile Include="ffmpeg\ShowDevices.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
@@ -29,5 +30,8 @@
     <ClInclude Include="core\win_time.h" />
     <ClInclude Include="core\win_os.h" />
     <ClInclude Include="core\sp_process.h" />
+    <ClInclude Include="ffmpeg\ShowDevices.h" />
+    <ClInclude Include="ffmpeg\export.h" />
+    <ClInclude Include="ffmpeg\ffmpegHeader.h" />
   </ItemGroup>
 </Project>

@@ -2,8 +2,9 @@
 //
 
 extern "C" {
-	#include "core/export.h"
+#include "core/export.h"
 }
+#include "ffmpeg/export.h"
 #include <iostream>
 
 int main(int argc, const char *argv[])
@@ -24,8 +25,11 @@ int main(int argc, const char *argv[])
 		return 1;
 	}
 
-
-
+	avformat_network_init();
+	avdevice_register_all();
+	ShowDevices *sd = new ShowDevices();
+	sd->show_dshow_devices();
+	sd->show_dshow_device_options();
 
 	return 0;
 }

@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>./lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -91,10 +92,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -167,6 +170,9 @@
     <ClInclude Include="core\win_files.h" />
     <ClInclude Include="core\win_os.h" />
     <ClInclude Include="core\win_time.h" />
+    <ClInclude Include="ffmpeg\export.h" />
+    <ClInclude Include="ffmpeg\ffmpegHeader.h" />
+    <ClInclude Include="ffmpeg\ShowDevices.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\sp_log.c" />
@@ -178,6 +184,7 @@
     <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
+    <ClCompile Include="ffmpeg\ShowDevices.cpp" />
     <ClCompile Include="StreamPusher.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
