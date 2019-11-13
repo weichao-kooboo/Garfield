@@ -34,4 +34,14 @@
     <ClInclude Include="ffmpeg\export.h" />
     <ClInclude Include="ffmpeg\ffmpegHeader.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dll\avdevice-58.dll" />
+    <None Include="dll\avfilter-7.dll" />
+    <None Include="dll\avformat-58.dll" />
+    <None Include="dll\avutil-56.dll" />
+    <None Include="dll\postproc-55.dll" />
+    <None Include="dll\swresample-3.dll" />
+    <None Include="dll\swscale-5.dll" />
+    <None Include="dll\avcodec-58.dll" />
+  </ItemGroup>
 </Project>

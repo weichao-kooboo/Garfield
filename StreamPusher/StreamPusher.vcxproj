@@ -73,6 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>./lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(LocalDebuggerWorkingDirectory)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -186,6 +187,18 @@
     <ClCompile Include="core\win_time.c" />
     <ClCompile Include="ffmpeg\ShowDevices.cpp" />
     <ClCompile Include="StreamPusher.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dll\avcodec-58.dll">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="dll\avdevice-58.dll" />
+    <None Include="dll\avfilter-7.dll" />
+    <None Include="dll\avformat-58.dll" />
+    <None Include="dll\avutil-56.dll" />
+    <None Include="dll\postproc-55.dll" />
+    <None Include="dll\swresample-3.dll" />
+    <None Include="dll\swscale-5.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
