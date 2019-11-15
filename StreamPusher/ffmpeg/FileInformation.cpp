@@ -3,10 +3,12 @@
 
 FileInformation::FileInformation()
 {
+
 }
 
 FileInformation::~FileInformation()
 {
+
 }
 
 char * FileInformation::GetFileName() const
