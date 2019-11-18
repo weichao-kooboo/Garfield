@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AvioReading.h" />
     <ClInclude Include="FFmpegMethods.h" />
     <ClInclude Include="include\libavcodec\ac3_parser.h" />
     <ClInclude Include="include\libavcodec\adts_parser.h" />
@@ -279,6 +280,7 @@
     <ClInclude Include="ShowDevices.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AvioReading.cpp" />
     <ClCompile Include="FFmpegMethods.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
