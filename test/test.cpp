@@ -441,6 +441,7 @@ int main(int argc, const char *argv[]) {
 	avformat_network_init();
 	avdevice_register_all();
 	AvioReading *ar = new AvioReading();
+
 	ar->run(argc, argv);
 	return 0;
 }
