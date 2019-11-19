@@ -10,6 +10,8 @@ struct buffer_data {
 	size_t size; ///< size left in the buffer
 };
 
+static int read_packet(void * opaque, uint8_t * buf, int buf_size);
+
 AvioReading::AvioReading()
 {
 }
@@ -19,7 +21,7 @@ AvioReading::~AvioReading()
 {
 }
 
-int AvioReading::run(int argc, char *argv[])
+int AvioReading::run(int argc,const char *argv[])
 {
 	AVFormatContext *fmt_ctx = NULL;
 	AVIOContext *avio_ctx = NULL;
@@ -35,7 +37,7 @@ int AvioReading::run(int argc, char *argv[])
 			"accessed through AVIOContext.\n", argv[0]);
 		return 1;
 	}
-	input_filename = argv[1];
+	input_filename = (char *)argv[1];
 
 	/* slurp file content into buffer */
 	ret = av_file_map(input_filename, &buffer, &buffer_size, 0, NULL);
@@ -51,7 +53,7 @@ int AvioReading::run(int argc, char *argv[])
 		goto end;
 	}
 
-	avio_ctx_buffer = av_malloc(avio_ctx_buffer_size);
+	avio_ctx_buffer = (uint8_t *)av_malloc(avio_ctx_buffer_size);
 	if (!avio_ctx_buffer) {
 		ret = AVERROR(ENOMEM);
 		goto end;
@@ -89,14 +91,14 @@ end:
 	av_file_unmap(buffer, buffer_size);
 
 	if (ret < 0) {
-		fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
+		//fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
 		return 1;
 	}
 
 	return 0;
 }
 
-int AvioReading::read_packet(void * opaque, uint8_t * buf, int buf_size)
+static int read_packet(void * opaque, uint8_t * buf, int buf_size)
 {
 	struct buffer_data *bd = (struct buffer_data *)opaque;
 	buf_size = FFMIN(buf_size, bd->size);

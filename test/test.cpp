@@ -4,6 +4,7 @@
 #include "pch.h"
 #include <iostream>
 #include "ShowDevices.h"
+#include "AvioReading.h"
 
 AVInputFormat *find_input_format(const char *short_name) {
 	const AVInputFormat *fmt = NULL;
@@ -28,7 +29,7 @@ extern "C" {
 	static void save_gray_frame(unsigned char *buf, int wrap, int xsize, int ysize, char *filename);
 }
 
-int main(int argc, const char *argv[])
+int parseFrame(int argc, const char *argv[])
 {
 	logging("initializing all the containers,codecs and protocols");
 
@@ -435,3 +436,11 @@ int main(int argc, const char *argv[]) {
 	av_dump_format(ifmt_ctx, 0, in_filename, 0);
 }
 */
+
+int main(int argc, const char *argv[]) {
+	avformat_network_init();
+	avdevice_register_all();
+	AvioReading *ar = new AvioReading();
+	ar->run(argc, argv);
+	return 0;
+}
