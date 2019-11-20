@@ -173,7 +173,8 @@
     <ClInclude Include="core\win_time.h" />
     <ClInclude Include="ffmpeg\export.h" />
     <ClInclude Include="ffmpeg\ffmpegHeader.h" />
-    <ClInclude Include="ffmpeg\FileInformation.h" />
+    <ClInclude Include="ffmpeg\InputInformation.h" />
+    <ClInclude Include="ffmpeg\RtmpPusher.h" />
     <ClInclude Include="ffmpeg\ShowDevices.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +187,8 @@
     <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
-    <ClCompile Include="ffmpeg\FileInformation.cpp" />
+    <ClCompile Include="ffmpeg\InputInformation.cpp" />
+    <ClCompile Include="ffmpeg\RtmpPusher.cpp" />
     <ClCompile Include="ffmpeg\ShowDevices.cpp" />
     <ClCompile Include="StreamPusher.cpp" />
   </ItemGroup>

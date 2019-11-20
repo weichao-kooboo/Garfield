@@ -40,6 +40,9 @@
  * 该类用于获取连接到PC端的设备,和设备的参数
  * 参考:https://blog.csdn.net/leixiaohua1020/article/details/39702113
 */
+#ifndef _SHOW_DEVICES_H_INCLUDED_
+#define	_SHOW_DEVICES_H_INCLUDED_
+
 #include "ffmpegHeader.h"
 
 class ShowDevices
@@ -60,4 +63,5 @@ public:
 	//show AVFoundation Device
 	static void show_avfoundation_device();
 };
+#endif // !_SHOW_DEVICES_H_INCLUDED_
 

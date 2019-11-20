@@ -12,7 +12,8 @@
     <ClCompile Include="StreamPusher.cpp" />
     <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="ffmpeg\ShowDevices.cpp" />
-    <ClCompile Include="ffmpeg\FileInformation.cpp" />
+    <ClCompile Include="ffmpeg\InputInformation.cpp" />
+    <ClCompile Include="ffmpeg\RtmpPusher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
@@ -34,7 +35,8 @@
     <ClInclude Include="ffmpeg\ShowDevices.h" />
     <ClInclude Include="ffmpeg\export.h" />
     <ClInclude Include="ffmpeg\ffmpegHeader.h" />
-    <ClInclude Include="ffmpeg\FileInformation.h" />
+    <ClInclude Include="ffmpeg\InputInformation.h" />
+    <ClInclude Include="ffmpeg\RtmpPusher.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\avdevice-58.dll" />

@@ -440,8 +440,32 @@ int main(int argc, const char *argv[]) {
 int main(int argc, const char *argv[]) {
 	avformat_network_init();
 	avdevice_register_all();
-	AvioReading *ar = new AvioReading();
 
-	ar->run(argc, argv);
+	logging("initializing all the containers,codecs and protocols");
+
+	const char *input_filename = "Vi.flv";
+
+	AVFormatContext *pFormatContext = avformat_alloc_context();
+	if (!pFormatContext) {
+		logging("ERROR could not allocate memory for Format Context");
+		return -1;
+	}
+
+	logging("opening the input file (%s) and loading format (container) header", input_filename);
+
+	if (avformat_open_input(&pFormatContext, input_filename, NULL, NULL) != 0) {
+		logging("ERROR could not open the file");
+		return -1;
+	}
+	int ret = 0;
+	ret = avformat_find_stream_info(pFormatContext, NULL);
+	if (ret < 0) {
+		fprintf(stderr, "Could not find stream information\n");
+		return -1;
+	}
+	av_dump_format(pFormatContext, 0, input_filename, 0);
+	//AvioReading *ar = new AvioReading();
+
+	//ar->run(argc, argv);
 	return 0;
 }
