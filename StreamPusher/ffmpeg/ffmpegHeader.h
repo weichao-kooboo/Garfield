@@ -3,6 +3,7 @@
 #define _SP_FFMPEG_FFMPEGHEADER_H_INCLUDED_
 
 extern	"C" {
+#include "../core/export.h"
 #include "../include/libavcodec/avcodec.h"
 #include "../include/libavformat/avformat.h"
 #include "../include/libavdevice/avdevice.h"

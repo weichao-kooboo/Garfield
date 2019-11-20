@@ -5,9 +5,9 @@
 #include "ffmpegHeader.h"
 class RtmpPusher {
 public:
-	RtmpPusher();
+	RtmpPusher(sp_log_t *logger);
 	~RtmpPusher();
-	void push(const char* input_name, const char *output_name);
+	int push(const char* input_name, const char *output_name);
 private:
 	int openInput();
 	void openOutput();
@@ -16,6 +16,7 @@ private:
 	const char *_output_name;
 	AVFormatContext *_ifmt_ctx,*ofmt_ctx;
 	AVOutputFormat *ofmt = NULL;
+	sp_log_t *_logger;
 };
 
 #endif // !_RTMP_PUSHER_H_INCLUDED_
