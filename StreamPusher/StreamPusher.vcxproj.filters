@@ -37,6 +37,8 @@
     <ClInclude Include="ffmpeg\ffmpegHeader.h" />
     <ClInclude Include="ffmpeg\InputInformation.h" />
     <ClInclude Include="ffmpeg\RtmpPusher.h" />
+    <ClInclude Include="ffmpeg\Logger.h" />
+    <ClInclude Include="ffmpeg\Mutex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\avdevice-58.dll" />

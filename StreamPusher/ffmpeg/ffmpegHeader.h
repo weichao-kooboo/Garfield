@@ -10,5 +10,7 @@ extern	"C" {
 #include "../include/libavutil/time.h"
 #include "../include/libavutil/avstring.h"
 }
+#include <memory>
+#include <string>
 
 #endif // !_SP_FFMPEG_FFMPEGHEADER_H_INCLUDED_
