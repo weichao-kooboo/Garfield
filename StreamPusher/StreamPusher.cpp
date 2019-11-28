@@ -3,11 +3,20 @@
 
 #include "ffmpeg/export.h"
 #include <iostream>
+#include <functional>
+
+void delete_obj(sp_log_t *log) {
+	if (sp_close_file(log->file->fd) == SP_FILE_ERROR) {
+		return;
+	}
+}
 
 int main(int argc, const char *argv[])
 {
+	using namespace std::placeholders;
+
 	sp_log_t	*log;
-	const char *in_filename, *out_filename;
+	string in_filename, out_filename;
 
 	if (sp_strerror_init() != SP_OK) {
 		return 1;
@@ -19,19 +28,27 @@ int main(int argc, const char *argv[])
 
 	u_char *p = NULL;
 	log = sp_log_init(p);
+	//log = (sp_log_t*)malloc(sizeof(sp_log_t));
 	if (log == NULL) {
 		return 1;
 	}
 	// log test
-	sp_log_error(SP_LOG_ALERT, log, 0,
-		"start");
-	avformat_network_init();
-	avdevice_register_all();
+	//sp_log_error(SP_LOG_ALERT, log, 0,"start");
+
 	in_filename = "Vi.flv";
 
 	out_filename = "rtmp://192.168.11.138:1935/cctvf";
 
-	RtmpPusher *rp = new RtmpPusher(log);
+	avformat_network_init();
+	avdevice_register_all();
+	RtmpPusher *rp = new RtmpPusher();
+	std::shared_ptr<sp_log_t> s_log(log, std::bind(delete_obj, _1));
+	rp->setLogger(std::weak_ptr<sp_log_t>(s_log));
 	rp->push(in_filename,out_filename);
+
+	//todo release sp_log_t,也许需要定制释放
+	s_log.reset();
+	delete rp;
+	rp = NULL;
 	return 0;
 }

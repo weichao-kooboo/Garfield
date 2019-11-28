@@ -296,6 +296,12 @@ sp_log_error(sp_uint_t level, sp_log_t *log, sp_err_t err,
 	}
 }
 
+void sp_cdecl 
+sp_log_error_msg(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, va_list args) {
+	sp_log_error_core(level, log, err, fmt, args);
+}
+
 
 void sp_cdecl
 sp_log_debug_core(sp_log_t *log, sp_err_t err, const char *fmt, ...)

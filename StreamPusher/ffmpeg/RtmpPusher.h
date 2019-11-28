@@ -5,7 +5,6 @@
 #include "ffmpegHeader.h"
 using namespace std;
 
-typedef std::weak_ptr<string> wpString;
 typedef std::weak_ptr<sp_log_t> wpLog;
 typedef std::shared_ptr<sp_log_t> spLog;
 
@@ -13,16 +12,17 @@ class RtmpPusher {
 public:
 	RtmpPusher();
 	~RtmpPusher();
-	int push(const char* input_name, const char *output_name);
+	int push(string &input_name, string &output_name);
 	void setLogger(std::weak_ptr<sp_log_t> logger);
 private:
 	int openInput();
-	void openOutput();
-	void pushStream();
+	int openOutput();
+	int pushStream();
 	void writeLog(const char *fmt, ...);
-	wpString _input_name;
-	wpString _output_name;
-	AVFormatContext *_ifmt_ctx,*ofmt_ctx;
+	int videoindex;
+	string _input_name;
+	string _output_name;
+	AVFormatContext *ifmt_ctx,*ofmt_ctx;
 	AVOutputFormat *ofmt = NULL;
 	wpLog _logger;
 };
