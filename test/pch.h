@@ -16,6 +16,10 @@ extern "C" {
 #include "include/libavdevice/avdevice.h"
 #include "include/libavutil/time.h"
 #include "include/libavutil/avstring.h"
+#include "include/libavfilter/buffersink.h"
+#include "include/libavfilter/buffersrc.h"
+#include "include/libavutil/opt.h"
+#include "include/libavutil/pixdesc.h"
 }
 #include <stdio.h>
 #include <stdarg.h>

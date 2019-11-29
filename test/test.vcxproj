@@ -276,12 +276,14 @@
     <ClInclude Include="include\libswresample\version.h" />
     <ClInclude Include="include\libswscale\swscale.h" />
     <ClInclude Include="include\libswscale\version.h" />
+    <ClInclude Include="leixiaoye_transcoding.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ShowDevices.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvioReading.cpp" />
     <ClCompile Include="FFmpegMethods.cpp" />
+    <ClCompile Include="leixiaoye_transcoding.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

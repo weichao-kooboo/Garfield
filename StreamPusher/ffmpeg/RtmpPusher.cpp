@@ -60,7 +60,14 @@ int RtmpPusher::openInput()
 		writeLog(" input name:%s have been release", _input_name.c_str());
 	}
 
-	if ((ret = avformat_open_input(&ifmt_ctx, _input_name.c_str(), 0, 0)) < 0) {
+#if USE_DSHOW
+	AVInputFormat *ifmt = av_find_input_format("dshow");
+	_input_name = "XiaoMi USB 2.0 Webcam";
+	if ((ret = avformat_open_input(&ifmt_ctx, _input_name.c_str(), ifmt, 0)) < 0)
+#else
+	if ((ret = avformat_open_input(&ifmt_ctx, _input_name.c_str(), 0, 0)) < 0)
+#endif
+	 {
 		writeLog(" open:%s failed", _input_name.c_str());
 		return ret;
 	}

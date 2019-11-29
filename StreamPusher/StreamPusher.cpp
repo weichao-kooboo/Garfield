@@ -46,9 +46,5 @@ int main(int argc, const char *argv[])
 	rp->setLogger(std::weak_ptr<sp_log_t>(s_log));
 	rp->push(in_filename,out_filename);
 
-	//todo release sp_log_t,也许需要定制释放
-	s_log.reset();
-	delete rp;
-	rp = NULL;
 	return 0;
 }
