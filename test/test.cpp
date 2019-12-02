@@ -844,13 +844,19 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index) 
 	AVFrame *filt_frame;
 
 	av_log(NULL, AV_LOG_INFO, "Pushing decoded frame to filters\n");
+	av_log(NULL, AV_LOG_INFO, "(type=%c, size=%d bytes) pts %d key_frame %d [DTS %d]",
+		av_get_picture_type_char(frame->pict_type),
+		frame->pkt_size,
+		frame->pts,
+		frame->key_frame,
+		frame->coded_picture_number);
 	/* push the decoded frame into the filtergraph */
-	/*ret = av_buffersrc_add_frame_flags(filter_ctx[stream_index].buffersrc_ctx,
+	ret = av_buffersrc_add_frame_flags(filter_ctx[stream_index].buffersrc_ctx,
 		frame, 0);
 	if (ret < 0) {
 		av_log(NULL, AV_LOG_ERROR, "Error while feeding the filtergraph\n");
 		return ret;
-	}*/
+	}
 
 	/* pull filtered frames from the filtergraph */
 	while (1) {
@@ -860,18 +866,18 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index) 
 			break;
 		}
 		av_log(NULL, AV_LOG_INFO, "Pulling filtered frame from filters\n");
-		//ret = av_buffersink_get_frame(filter_ctx[stream_index].buffersink_ctx,
-		//	filt_frame);
-		//if (ret < 0) {
-		//	/* if no more frames for output - returns AVERROR(EAGAIN)
-		//	 * if flushed and no more frames for output - returns AVERROR_EOF
-		//	 * rewrite retcode to 0 to show it as normal procedure completion
-		//	 */
-		//	if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-		//		ret = 0;
-		//	av_frame_free(&filt_frame);
-		//	break;
-		//}
+		ret = av_buffersink_get_frame(filter_ctx[stream_index].buffersink_ctx,
+			filt_frame);
+		if (ret < 0) {
+			/* if no more frames for output - returns AVERROR(EAGAIN)
+			 * if flushed and no more frames for output - returns AVERROR_EOF
+			 * rewrite retcode to 0 to show it as normal procedure completion
+			 */
+			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+				ret = 0;
+			av_frame_free(&filt_frame);
+			break;
+		}
 
 		filt_frame->pict_type = AV_PICTURE_TYPE_NONE;
 		ret = encode_write_frame(filt_frame, stream_index, NULL);
@@ -999,8 +1005,9 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 				frame->pts = frame->best_effort_timestamp;
 				ret = filter_encode_write_frame(frame, stream_index);
 				av_frame_free(&frame);
-				if (ret < 0)
+				if (ret < 0) {
 					goto end;
+				}
 			//}
 			//else {
 			//	av_frame_free(&frame);
