@@ -768,14 +768,13 @@ static int init_filters(void)
 	return 0;
 }
 
-static int ex_encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt)
+static int ex_encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt,unsigned int stream_index)
 {
 	int ret;
 
 	/* send the frame to the encoder */
 	if (frame) {
 		//printf("Send frame %3"PRId64"\n", frame->pts);
-		return -1;
 	}
 
 	ret = avcodec_send_frame(enc_ctx, frame);
@@ -788,14 +787,20 @@ static int ex_encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt)
 		ret = avcodec_receive_packet(enc_ctx, pkt);
 		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
 			return 0;
-		else if (ret < 0) {
+		else if (ret < 0) { 
 			//fprintf(stderr, "Error during encoding\n");
 			return ret;
 		}
 
-		/*printf("Write packet %3"PRId64" (size=%5d)\n", pkt->pts, pkt->size);
-		fwrite(pkt->data, 1, pkt->size, outfile);
-		av_packet_unref(pkt);*/
+		/* prepare packet for muxing */
+		pkt->stream_index = stream_index;
+		av_packet_rescale_ts(pkt,
+			stream_ctx[stream_index].enc_ctx->time_base,
+			ofmt_ctx->streams[stream_index]->time_base);
+
+		av_log(NULL, AV_LOG_DEBUG, "Muxing frame\n");
+		/* mux encoded frame */
+		ret = av_interleaved_write_frame(ofmt_ctx, pkt);
 	}
 }
 
@@ -807,7 +812,7 @@ static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, in
 		(ifmt_ctx->streams[stream_index]->codecpar->codec_type ==
 			AVMEDIA_TYPE_VIDEO) ? avcodec_encode_video2 : avcodec_encode_audio2;*/
 
-	int(*enc_func)(AVCodecContext *, AVFrame *, AVPacket *) = ex_encode;
+	int(*enc_func)(AVCodecContext *, AVFrame *, AVPacket *, unsigned int stream_index) = ex_encode;
 
 	if (!got_frame)
 		got_frame = &got_frame_local;
@@ -817,22 +822,12 @@ static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, in
 	enc_pkt.data = NULL;
 	enc_pkt.size = 0;
 	av_init_packet(&enc_pkt);
-	ret = enc_func(stream_ctx[stream_index].enc_ctx, filt_frame, &enc_pkt);
+	ret = enc_func(stream_ctx[stream_index].enc_ctx, filt_frame, &enc_pkt, stream_index);
 	av_frame_free(&filt_frame);
 	if (ret < 0)
 		return ret;
 	/*if (!(*got_frame))
 		return 0;*/
-
-	/* prepare packet for muxing */
-	enc_pkt.stream_index = stream_index;
-	av_packet_rescale_ts(&enc_pkt,
-		stream_ctx[stream_index].enc_ctx->time_base,
-		ofmt_ctx->streams[stream_index]->time_base);
-
-	av_log(NULL, AV_LOG_DEBUG, "Muxing frame\n");
-	/* mux encoded frame */
-	ret = av_interleaved_write_frame(ofmt_ctx, &enc_pkt);
 
 	//todo
 	av_packet_unref(&enc_pkt);
@@ -844,12 +839,6 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index) 
 	AVFrame *filt_frame;
 
 	av_log(NULL, AV_LOG_INFO, "Pushing decoded frame to filters\n");
-	av_log(NULL, AV_LOG_INFO, "(type=%c, size=%d bytes) pts %d key_frame %d [DTS %d]",
-		av_get_picture_type_char(frame->pict_type),
-		frame->pkt_size,
-		frame->pts,
-		frame->key_frame,
-		frame->coded_picture_number);
 	/* push the decoded frame into the filtergraph */
 	ret = av_buffersrc_add_frame_flags(filter_ctx[stream_index].buffersrc_ctx,
 		frame, 0);
@@ -888,9 +877,10 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index) 
 	return ret;
 }
 
-int ex_decode_packet(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame * pFrame)
+int ex_decode_packet(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame * pFrame,unsigned int stream_index)
 {
 	int response = avcodec_send_packet(pCodecContext, pPacket);
+	int ret = 0;
 
 	if (response < 0) {
 		logging("Error while sending a packet to the decoder: %s", response);
@@ -919,11 +909,19 @@ int ex_decode_packet(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame
 				pFrame->key_frame,
 				pFrame->coded_picture_number
 			);
+
+
+			pFrame->pts = pFrame->best_effort_timestamp;
+			ret = filter_encode_write_frame(pFrame, stream_index);
+			//av_frame_free(&frame);
+			if (ret < 0) {
+				return ret;
+			}
+
 		}
 	}
 	return 0;
 }
-
 
 static int flush_encoder(unsigned int stream_index)
 {
@@ -953,8 +951,9 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 	enum AVMediaType type;
 	unsigned int stream_index;
 	unsigned int i;
+	int64_t start_time = 0;
 	int got_frame;
-	int(*dec_func)(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame);
+	int(*dec_func)(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame, unsigned int stream_index);
 
 	const char *in_filename = "Vi.flv";
 
@@ -969,6 +968,8 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 	open_output_file(out_filename);
 
 	init_filters();
+	start_time = av_gettime();
+	int frame_index = 0;
 
 	/* read all packets */
 	while (1) {
@@ -979,6 +980,27 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 		av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
 			stream_index);
 
+
+		if (packet.pts == AV_NOPTS_VALUE || packet.dts == AV_NOPTS_VALUE) {
+			AVRational time_base1 = ifmt_ctx->streams[0]->time_base;
+			int64_t calc_duration = (double)AV_TIME_BASE / av_q2d(ifmt_ctx->streams[0]->r_frame_rate);
+			//Parameters
+			packet.pts = (double)(frame_index*calc_duration) / (double)(av_q2d(time_base1)*AV_TIME_BASE);
+			packet.dts = packet.pts;
+			packet.duration = (double)calc_duration / (double)(av_q2d(time_base1)*AV_TIME_BASE);
+		}
+		//Important:Delay
+		/*if (packet.stream_index == 0) {
+			AVRational time_base = ifmt_ctx->streams[0]->time_base;
+			AVRational time_base_q = { 1,AV_TIME_BASE };
+			int64_t pts_time = av_rescale_q(packet.dts, time_base, time_base_q);
+			int64_t now_time = av_gettime() - start_time;
+			if (pts_time > now_time)
+				av_usleep(pts_time - now_time);
+
+		}*/
+
+		frame_index++;
 		if (filter_ctx[stream_index].filter_graph) {
 			av_log(NULL, AV_LOG_DEBUG, "Going to reencode&filter the frame\n");
 			frame = av_frame_alloc();
@@ -994,24 +1016,12 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 			dec_func = ex_decode_packet;
 			/*ret = dec_func(stream_ctx[stream_index].dec_ctx, frame,
 				&got_frame, &packet);*/
-			ret = dec_func(&packet, stream_ctx[stream_index].dec_ctx, frame);
+			ret = dec_func(&packet, stream_ctx[stream_index].dec_ctx, frame, stream_index);
 			if (ret < 0) {
 				av_frame_free(&frame);
 				av_log(NULL, AV_LOG_ERROR, "Decoding failed\n");
 				break;
 			}
-
-			//if (got_frame) {
-				frame->pts = frame->best_effort_timestamp;
-				ret = filter_encode_write_frame(frame, stream_index);
-				av_frame_free(&frame);
-				if (ret < 0) {
-					goto end;
-				}
-			//}
-			//else {
-			//	av_frame_free(&frame);
-			//}
 		}
 		else {
 			/* remux this frame without reencoding */
