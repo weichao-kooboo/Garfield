@@ -413,7 +413,6 @@ static int open_input_file(const char * dshow_input_name)
 	unsigned int i;
 
 	AVInputFormat *dshow_ifmt = av_find_input_format("dshow");
-	//const char *dshow_input_name = "video=XiaoMi USB 2.0 Webcam";
 
 	ifmt_ctx = NULL;
 	if ((ret = avformat_open_input(&ifmt_ctx, dshow_input_name, dshow_ifmt, NULL)) < 0) {
@@ -760,6 +759,16 @@ static int init_filters(void)
 			filter_spec = "null"; /* passthrough (dummy) filter for video */
 		else
 			filter_spec = "anull"; /* passthrough (dummy) filter for audio */
+		// add filter
+		//filter_spec = "drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='Lei Xiaohua'";
+
+		//const char *filter_descr = "lutyuv='u=128:v=128'";
+		//const char *filter_descr = "boxblur";
+		//const char *filter_descr = "hflip";
+		//const char *filter_descr = "hue='h=60:s=-3'";
+		//const char *filter_descr = "crop=2/3*in_w:2/3*in_h";
+		//const char *filter_descr = "drawbox=x=100:y=100:w=100:h=100:color=pink@0.5";
+		//const char *filter_descr = "drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='Lei Xiaohua'";
 		ret = init_filter(&filter_ctx[i], stream_ctx[i].dec_ctx,
 			stream_ctx[i].enc_ctx, filter_spec);
 		if (ret)
@@ -804,18 +813,11 @@ static int ex_encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt,unsi
 	}
 }
 
-static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, int *got_frame) {
+static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index) {
 	int ret;
-	int got_frame_local;
 	AVPacket enc_pkt;
-	/*int(*enc_func)(AVCodecContext *, AVPacket *, const AVFrame *, int *) =
-		(ifmt_ctx->streams[stream_index]->codecpar->codec_type ==
-			AVMEDIA_TYPE_VIDEO) ? avcodec_encode_video2 : avcodec_encode_audio2;*/
 
 	int(*enc_func)(AVCodecContext *, AVFrame *, AVPacket *, unsigned int stream_index) = ex_encode;
-
-	if (!got_frame)
-		got_frame = &got_frame_local;
 
 	av_log(NULL, AV_LOG_INFO, "Encoding frame\n");
 	/* encode filtered frame */
@@ -826,8 +828,6 @@ static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, in
 	av_frame_free(&filt_frame);
 	if (ret < 0)
 		return ret;
-	/*if (!(*got_frame))
-		return 0;*/
 
 	//todo
 	av_packet_unref(&enc_pkt);
@@ -869,7 +869,7 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index) 
 		}
 
 		filt_frame->pict_type = AV_PICTURE_TYPE_NONE;
-		ret = encode_write_frame(filt_frame, stream_index, NULL);
+		ret = encode_write_frame(filt_frame, stream_index);
 		if (ret < 0)
 			break;
 	}
@@ -926,7 +926,6 @@ int ex_decode_packet(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame
 static int flush_encoder(unsigned int stream_index)
 {
 	int ret;
-	int got_frame;
 
 	if (!(stream_ctx[stream_index].enc_ctx->codec->capabilities &
 		AV_CODEC_CAP_DELAY))
@@ -934,11 +933,9 @@ static int flush_encoder(unsigned int stream_index)
 
 	while (1) {
 		av_log(NULL, AV_LOG_INFO, "Flushing stream #%u encoder\n", stream_index);
-		ret = encode_write_frame(NULL, stream_index, &got_frame);
+		ret = encode_write_frame(NULL, stream_index);
 		if (ret < 0)
 			break;
-		/*if (!got_frame)
-			return 0;*/
 	}
 	return ret;
 }
@@ -951,8 +948,6 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 	enum AVMediaType type;
 	unsigned int stream_index;
 	unsigned int i;
-	int64_t start_time = 0;
-	int got_frame;
 	int(*dec_func)(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame, unsigned int stream_index);
 
 	const char *in_filename = "Vi.flv";
@@ -968,8 +963,6 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 	open_output_file(out_filename);
 
 	init_filters();
-	start_time = av_gettime();
-	int frame_index = 0;
 
 	/* read all packets */
 	while (1) {
@@ -980,27 +973,6 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 		av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
 			stream_index);
 
-
-		if (packet.pts == AV_NOPTS_VALUE || packet.dts == AV_NOPTS_VALUE) {
-			AVRational time_base1 = ifmt_ctx->streams[0]->time_base;
-			int64_t calc_duration = (double)AV_TIME_BASE / av_q2d(ifmt_ctx->streams[0]->r_frame_rate);
-			//Parameters
-			packet.pts = (double)(frame_index*calc_duration) / (double)(av_q2d(time_base1)*AV_TIME_BASE);
-			packet.dts = packet.pts;
-			packet.duration = (double)calc_duration / (double)(av_q2d(time_base1)*AV_TIME_BASE);
-		}
-		//Important:Delay
-		/*if (packet.stream_index == 0) {
-			AVRational time_base = ifmt_ctx->streams[0]->time_base;
-			AVRational time_base_q = { 1,AV_TIME_BASE };
-			int64_t pts_time = av_rescale_q(packet.dts, time_base, time_base_q);
-			int64_t now_time = av_gettime() - start_time;
-			if (pts_time > now_time)
-				av_usleep(pts_time - now_time);
-
-		}*/
-
-		frame_index++;
 		if (filter_ctx[stream_index].filter_graph) {
 			av_log(NULL, AV_LOG_DEBUG, "Going to reencode&filter the frame\n");
 			frame = av_frame_alloc();
