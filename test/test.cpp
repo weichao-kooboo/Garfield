@@ -33,7 +33,7 @@ int parseFrame(int argc, const char *argv[])
 {
 	logging("initializing all the containers,codecs and protocols");
 
-	const char *in_filename = "Vi.flv";
+	const char *in_filename = "my_test.flv";
 
 	AVFormatContext *pFormatContext = avformat_alloc_context();
 	if (!pFormatContext) {
@@ -391,7 +391,7 @@ end:
 	return 0;
 }
 
-
+int ex_decode_packet(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame * pFrame, unsigned int stream_index);
 typedef struct StreamContext {
 	AVCodecContext *dec_ctx;
 	AVCodecContext *enc_ctx;
@@ -477,7 +477,10 @@ static int open_output_file(const char *filename)
 	unsigned int i;
 
 	ofmt_ctx = NULL;
+#if USE_RTMP
 	avformat_alloc_output_context2(&ofmt_ctx, NULL, "flv", filename);
+#endif
+	avformat_alloc_output_context2(&ofmt_ctx, NULL, NULL, filename);
 	if (!ofmt_ctx) {
 		av_log(NULL, AV_LOG_ERROR, "Could not create output context\n");
 		return AVERROR_UNKNOWN;
@@ -783,7 +786,7 @@ static int ex_encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt,unsi
 
 	/* send the frame to the encoder */
 	if (frame) {
-		//printf("Send frame %3"PRId64"\n", frame->pts);
+		printf("pts %d\n", frame->pts);
 	}
 
 	ret = avcodec_send_frame(enc_ctx, frame);
@@ -824,7 +827,7 @@ static int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index) {
 	enc_pkt.data = NULL;
 	enc_pkt.size = 0;
 	av_init_packet(&enc_pkt);
-	ret = enc_func(stream_ctx[stream_index].enc_ctx, filt_frame, &enc_pkt, stream_index);
+	ret = enc_func(stream_ctx[stream_index].enc_ctx, filt_frame, &enc_pkt, stream_index); 
 	av_frame_free(&filt_frame);
 	if (ret < 0)
 		return ret;
@@ -952,7 +955,8 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 
 	const char *in_filename = "Vi.flv";
 
-	const char *out_filename = "rtmp://192.168.11.138:1935/cctvf";
+	const char *out_filename = "my_test.flv";
+	//const char *out_filename = "rtmp://192.168.11.138:1935/cctvf";
 	avformat_network_init();
 	avdevice_register_all();
 
@@ -1053,7 +1057,8 @@ end:
 }
 
 int main(int argc, const char *argv[]) {
-	pushRTMPflv(argc, argv);
+	//pushRTMPflv(argc, argv);
+	parseFrame(argc, argv);
 }
 
 /*
