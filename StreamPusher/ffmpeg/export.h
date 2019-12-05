@@ -5,5 +5,6 @@
 
 #include "ShowDevices.h"
 #include "RtmpPusher.h"
+#include "MediaFormat.h"
 
 #endif // !_SP_FFMPEG_EXPORT_H_INCLUDED_

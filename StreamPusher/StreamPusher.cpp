@@ -43,8 +43,13 @@ int main(int argc, const char *argv[])
 	avdevice_register_all();
 	RtmpPusher *rp = new RtmpPusher();
 	std::shared_ptr<sp_log_t> s_log(log, std::bind(delete_obj, _1));
-	rp->setLogger(std::weak_ptr<sp_log_t>(s_log));
-	rp->push(in_filename,out_filename);
+	//rp->setLogger(std::weak_ptr<sp_log_t>(s_log));
+	//rp->push(in_filename,out_filename);
+	in_filename = "A4tech USB2.0 Camera";
+	MediaFormat *mf = new MediaFormat(in_filename);
+	mf->setLogger(std::weak_ptr<sp_log_t>(s_log));
+	mf->Open();
+
 
 	return 0;
 }

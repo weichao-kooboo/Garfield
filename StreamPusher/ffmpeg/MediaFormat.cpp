@@ -1,5 +1,10 @@
 #include "MediaFormat.h"
 
+enum {
+	EXTEN_CAMERA,
+	EXTEN_FILE
+}InputType;
+
 MediaFormat::MediaFormat(const string &name)
 {
 	_name = name;

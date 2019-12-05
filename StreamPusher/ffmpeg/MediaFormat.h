@@ -9,16 +9,6 @@ using namespace std;
 typedef std::weak_ptr<sp_log_t> wpLog;
 typedef std::shared_ptr<sp_log_t> spLog;
 
-
-enum {
-	EXTEN_CAMERA,
-	EXTEN_FILE
-}InputType;
-
-typedef struct StreamContext {
-	AVCodecContext *ctx;
-} StreamContext;
-
 class MediaFormat {
 public:
 	MediaFormat(const string &name);
@@ -28,6 +18,9 @@ public:
 	InputInformation *getInformation();
 	void setLogger(std::weak_ptr<sp_log_t> logger);
 private:
+	typedef struct StreamContext {
+		AVCodecContext *ctx;
+	} StreamContext;
     string _name;
 	InputInformation *_info;
 	AVFormatContext *fmt_ctx;

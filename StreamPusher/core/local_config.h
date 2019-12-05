@@ -7,7 +7,7 @@
 #endif
 
 #ifndef SP_PREFIX
-#define SP_PREFIX  "C:\\Users\\wc132\\Desktop\\myselfProject\\Garfield\\VideoCollection\\StreamPusher\\x64\\Debug"
+#define SP_PREFIX  "C:\\"
 #endif
 
 #endif // !_LOCAL_CONFIG_H_INCLUDED_
