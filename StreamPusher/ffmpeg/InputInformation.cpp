@@ -7,4 +7,5 @@ InputInformation::InputInformation()
 
 InputInformation::~InputInformation()
 {
+
 }

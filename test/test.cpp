@@ -10,7 +10,9 @@ AVInputFormat *find_input_format(const char *short_name) {
 	const AVInputFormat *fmt = NULL;
 	void *i = 0;
 	while ((fmt = av_demuxer_iterate(&i))) {
-		printf("%s \n",fmt->name);
+		printf("name:%s \n",fmt->name);
+		printf("extensions:%s \n", fmt->extensions);
+		printf("mime_type:%s \n", fmt->mime_type);
 		if (av_match_name(short_name, fmt->name)) {
 			return (AVInputFormat*)fmt;
 		}
@@ -1056,12 +1058,13 @@ end:
 	return ret ? 1 : 0;
 }
 
+/*
 int main(int argc, const char *argv[]) {
 	//pushRTMPflv(argc, argv);
 	parseFrame(argc, argv);
 }
+*/
 
-/*
 int main(int argc, const char *argv[]) {
 	avformat_network_init();
 
@@ -1071,7 +1074,6 @@ int main(int argc, const char *argv[]) {
 		printf("could find dshow devices");
 	}
 }
-*/
 
 /*
 int main(int argc, const char *argv[]) {
