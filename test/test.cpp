@@ -1058,22 +1058,20 @@ end:
 	return ret ? 1 : 0;
 }
 
-/*
 int main(int argc, const char *argv[]) {
 	//pushRTMPflv(argc, argv);
 	parseFrame(argc, argv);
 }
-*/
 
-int main(int argc, const char *argv[]) {
-	avformat_network_init();
-
-	avdevice_register_all();
-	AVInputFormat *av = find_input_format("dshow");
-	if (!av) {
-		printf("could find dshow devices");
-	}
-}
+//int main(int argc, const char *argv[]) {
+//	avformat_network_init();
+//
+//	avdevice_register_all();
+//	AVInputFormat *av = find_input_format("dshow");
+//	if (!av) {
+//		printf("could find dshow devices");
+//	}
+//}
 
 /*
 int main(int argc, const char *argv[]) {

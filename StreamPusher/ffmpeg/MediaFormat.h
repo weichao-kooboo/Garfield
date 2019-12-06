@@ -9,24 +9,37 @@ using namespace std;
 typedef std::weak_ptr<sp_log_t> wpLog;
 typedef std::shared_ptr<sp_log_t> spLog;
 
+enum IO_Type{
+	IO_TYPE_INPUT,
+	IO_TYPE_OUTPUT
+};
+
 class MediaFormat {
 public:
-	MediaFormat(const string &name);
+	MediaFormat(const string &name,
+		IO_Type type = IO_TYPE_INPUT);
 	~MediaFormat();
 	int Open();
 	//获取格式的所有信息
-	InputInformation *getInformation();
+	InputInformation *getInformation() const;
 	void setLogger(std::weak_ptr<sp_log_t> logger);
 private:
 	typedef struct StreamContext {
 		AVCodecContext *ctx;
 	} StreamContext;
+	enum {
+		EXTEN_CAMERA,
+		EXTEN_FILE
+	}InputType;
     string _name;
-	InputInformation *_info;
+	IO_Type _type;
+	std::shared_ptr<InputInformation> _info;
 	AVFormatContext *fmt_ctx;
 	StreamContext *stream_ctx;
 	//解析输入类型和格式
 	int parseFormat();
+	//解析输入流格式
+	int parseStreamFormat(int i,int is_output);
 	//解析输入文件的扩展名
 	//由于没有读取文件的头信息,所以在这里的输入类型判断基于输入字符串的扩展名.
 	//如果有扩展名,查看ffmpeg中是否支持该格式,

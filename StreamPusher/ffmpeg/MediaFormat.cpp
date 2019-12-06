@@ -1,17 +1,27 @@
 #include "MediaFormat.h"
+#include "InputInformation.h"
 
-enum {
-	EXTEN_CAMERA,
-	EXTEN_FILE
-}InputType;
 
-MediaFormat::MediaFormat(const string &name)
+MediaFormat::MediaFormat(const string &name,
+	IO_Type type)
+	:_name(name),
+	_type(type),
+	_info(new InputInformation())
 {
-	_name = name;
 }
 
 MediaFormat::~MediaFormat()
 {
+	_logger.reset();
+	_info.reset();
+	unsigned int i;
+	if (!fmt_ctx)
+		return;
+	for (i = 0; i < fmt_ctx->nb_streams; i++) {
+		avcodec_free_context(&stream_ctx[i].ctx);
+	}
+	av_free(stream_ctx);
+	avformat_close_input(&fmt_ctx);
 }
 
 int MediaFormat::Open()
@@ -78,11 +88,126 @@ int MediaFormat::Open()
 		stream_ctx[i].ctx = codec_ctx;
 	}
 
+	parseFormat();
+
 	return 0;
 }
 
 int MediaFormat::parseFormat()
 {
+	int i;
+	int is_output = (_type == IO_TYPE_INPUT);
+	writeLog("%s #, %s, %s '%s':\n",
+		is_output ? "Output" : "Input",
+		is_output ? fmt_ctx->oformat->name : fmt_ctx->iformat->name,
+		is_output ? "to" : "from", _name);
+
+	if (!is_output) {
+		//打印持续时间Duration
+		if (fmt_ctx->duration != AV_NOPTS_VALUE) {
+			int hours, mins, secs, us;
+			int64_t duration = fmt_ctx->duration + (fmt_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
+			secs = duration / AV_TIME_BASE;
+			us = duration % AV_TIME_BASE;
+			mins = secs / 60;
+			secs %= 60;
+			hours = mins / 60;
+			mins %= 60;
+			writeLog("Duration:%02d:%02d:%02d.%02d", hours, mins, secs,
+				(100 * us) / AV_TIME_BASE);
+		}
+		if (fmt_ctx->start_time != AV_NOPTS_VALUE) {
+			int secs, us;
+			secs = llabs(fmt_ctx->start_time / AV_TIME_BASE);
+			us = llabs(fmt_ctx->start_time % AV_TIME_BASE);
+			writeLog("start:%s%d.%06d",
+				fmt_ctx->start_time >= 0 ? "" : "-",
+				secs,
+				(int)av_rescale(us, 1000000, AV_TIME_BASE));
+		}
+		if (fmt_ctx->bit_rate)
+			writeLog("%lld kb/s\n", fmt_ctx->bit_rate / 1000);
+	}
+
+	for (i = 0; i < fmt_ctx->nb_streams; i++) {
+		parseStreamFormat(i, is_output);
+	}
+	return 0;
+}
+
+int MediaFormat::parseStreamFormat(int i, int is_output)
+{
+	char buf[256];
+	int flags = (is_output ? fmt_ctx->oformat->flags : fmt_ctx->iformat->flags);
+	AVStream *st = fmt_ctx->streams[i];
+	AVDictionaryEntry *lang = av_dict_get(st->metadata, "language", NULL, 0);
+	char *separator = fmt_ctx->dump_separator;
+	AVCodecContext *avctx;
+	int ret;
+
+	avctx = avcodec_alloc_context3(NULL);
+	if (!avctx)
+		return;
+
+	ret = avcodec_parameters_to_context(avctx, st->codecpar);
+	if (ret < 0) {
+		avcodec_free_context(&avctx);
+		return;
+	}
+
+	// Fields which are missing from AVCodecParameters need to be taken from the AVCodecContext
+	avctx->properties = st->codec->properties;
+	avctx->codec = st->codec->codec;
+	avctx->qmin = st->codec->qmin;
+	avctx->qmax = st->codec->qmax;
+	avctx->coded_width = st->codec->coded_width;
+	avctx->coded_height = st->codec->coded_height;
+
+	if (separator)
+		av_opt_set(avctx, "dump_separator", separator, 0);
+	avcodec_string(buf, sizeof(buf), avctx, is_output);
+	avcodec_free_context(&avctx);
+
+	av_log(NULL, AV_LOG_INFO, "    Stream #%d:%d", index, i);
+
+	if (flags & AVFMT_SHOW_IDS)
+		av_log(NULL, AV_LOG_INFO, "[0x%x]", st->id);
+	if (lang)
+		av_log(NULL, AV_LOG_INFO, "(%s)", lang->value);
+	av_log(NULL, AV_LOG_DEBUG, ", %d, %d/%d", st->codec_info_nb_frames,
+		st->time_base.num, st->time_base.den);
+	av_log(NULL, AV_LOG_INFO, ": %s", buf);
+
+	if (st->sample_aspect_ratio.num &&
+		av_cmp_q(st->sample_aspect_ratio, st->codecpar->sample_aspect_ratio)) {
+		AVRational display_aspect_ratio;
+		av_reduce(&display_aspect_ratio.num, &display_aspect_ratio.den,
+			st->codecpar->width  * (int64_t)st->sample_aspect_ratio.num,
+			st->codecpar->height * (int64_t)st->sample_aspect_ratio.den,
+			1024 * 1024);
+		av_log(NULL, AV_LOG_INFO, ", SAR %d:%d DAR %d:%d",
+			st->sample_aspect_ratio.num, st->sample_aspect_ratio.den,
+			display_aspect_ratio.num, display_aspect_ratio.den);
+	}
+
+	if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+		int fps = st->avg_frame_rate.den && st->avg_frame_rate.num;
+		int tbr = st->r_frame_rate.den && st->r_frame_rate.num;
+		int tbn = st->time_base.den && st->time_base.num;
+		int tbc = st->codec->time_base.den && st->codec->time_base.num;
+
+		if (fps || tbr || tbn || tbc)
+			av_log(NULL, AV_LOG_INFO, "%s", separator);
+
+		if (fps)
+			print_fps(av_q2d(st->avg_frame_rate), tbr || tbn || tbc ? "fps, " : "fps");
+		if (tbr)
+			print_fps(av_q2d(st->r_frame_rate), tbn || tbc ? "tbr, " : "tbr");
+		if (tbn)
+			print_fps(1 / av_q2d(st->time_base), tbc ? "tbn, " : "tbn");
+		if (tbc)
+			print_fps(1 / av_q2d(st->codec->time_base), "tbc");
+	}
 	return 0;
 }
 
@@ -93,7 +218,8 @@ int MediaFormat::checkExtensions()
 	}
 	string fileName = _name;
 	size_t exten_len = -1;
-	if ((exten_len = fileName.find('.')) < 0) {
+	if ((exten_len = fileName.find('.')) < 0
+		|| fileName.find("USB") >= 0) {
 		InputType = EXTEN_CAMERA;
 		return 0;
 	}
@@ -110,9 +236,9 @@ int MediaFormat::checkExtensions()
 	return -1;
 }
 
-InputInformation * MediaFormat::getInformation()
+InputInformation * MediaFormat::getInformation() const
 {
-	return nullptr;
+	return &(*_info);
 }
 
 void MediaFormat::setLogger(std::weak_ptr<sp_log_t> logger)

@@ -2,31 +2,21 @@
 #ifndef _INPUT_INFORMATION_H_INCLUDED_
 #define	_INPUT_INFORMATION_H_INCLUDED_
 
-typedef struct {
-	char *WMFSKDNeeded;
-	char *DeviceConformanceTemplate;
-	char *WMFSKDVersion;
-	char *IsVBR;
-	char *VBRPeak;
-	char *BufferAverage;
-	char *Encoder;
-}MetaData;
-
-typedef struct {
-	int index;
-}Stream;
+#include <string>
 
 class InputInformation {
 public:
 	InputInformation();
 	~InputInformation();
 private:
+	typedef struct {
+		int index;
+	}Stream;
 	char *_format;
 	char *_url;
 	char *_duration;
 	char *_start;
 	char *_bitrate;
-	MetaData *_md;
 	Stream *_stream;
 };
 
