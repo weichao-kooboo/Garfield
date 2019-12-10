@@ -12,7 +12,6 @@
     <ClCompile Include="StreamPusher.cpp" />
     <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="ffmpeg\ShowDevices.cpp" />
-    <ClCompile Include="ffmpeg\InputInformation.cpp" />
     <ClCompile Include="ffmpeg\RtmpPusher.cpp" />
     <ClCompile Include="ffmpeg\MediaFormat.cpp" />
   </ItemGroup>
@@ -41,6 +40,7 @@
     <ClInclude Include="ffmpeg\Logger.h" />
     <ClInclude Include="ffmpeg\Mutex.h" />
     <ClInclude Include="ffmpeg\MediaFormat.h" />
+    <ClInclude Include="ffmpeg\noncopyable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\avdevice-58.dll" />

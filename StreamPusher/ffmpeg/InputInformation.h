@@ -4,19 +4,15 @@
 
 #include <string>
 
-class InputInformation {
-public:
-	InputInformation();
-	~InputInformation();
-private:
+struct InputInformation {
 	typedef struct {
 		int index;
 	}Stream;
-	char *_format;
-	char *_url;
-	char *_duration;
-	char *_start;
-	char *_bitrate;
+	const char *_format;
+	const char *_url;
+    char *_duration;
+    char *_start;
+    char *_bitrate;
 	Stream *_stream;
 };
 

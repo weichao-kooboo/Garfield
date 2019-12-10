@@ -13,7 +13,19 @@ MediaFormat::MediaFormat(const string &name,
 MediaFormat::~MediaFormat()
 {
 	_logger.reset();
-	_info.reset();
+	if (_info) {
+		if (_info->_duration) {
+			free(_info->_duration);
+			_info->_duration = NULL;
+		}if (_info->_start) {
+			free(_info->_start);
+			_info->_start = NULL;
+		}if (_info->_bitrate) {
+			free(_info->_bitrate);
+			_info->_bitrate = NULL;
+		}
+		_info.reset();
+	}
 	unsigned int i;
 	if (!fmt_ctx)
 		return;
@@ -96,11 +108,16 @@ int MediaFormat::Open()
 int MediaFormat::parseFormat()
 {
 	int i;
-	int is_output = (_type == IO_TYPE_INPUT);
+	char str[256];
+	memset(str, 0, sizeof(str));
+	int is_output = (_type != IO_TYPE_INPUT);
+
+	_info->_format = is_output ? fmt_ctx->oformat->name : fmt_ctx->iformat->name;
+	_info->_url = _name.c_str();
 	writeLog("%s #, %s, %s '%s':\n",
 		is_output ? "Output" : "Input",
-		is_output ? fmt_ctx->oformat->name : fmt_ctx->iformat->name,
-		is_output ? "to" : "from", _name);
+		_info->_format,
+		is_output ? "to" : "from", _info->_url);
 
 	if (!is_output) {
 		//打印持续时间Duration
@@ -113,20 +130,37 @@ int MediaFormat::parseFormat()
 			secs %= 60;
 			hours = mins / 60;
 			mins %= 60;
-			writeLog("Duration:%02d:%02d:%02d.%02d", hours, mins, secs,
+
+			sprintf(str, "Duration:%02d:%02d:%02d.%02d", hours, mins, secs,
 				(100 * us) / AV_TIME_BASE);
+			_info->_duration = (char*)malloc(sizeof(str));
+			memcpy(_info->_duration, str, sizeof(str));
+			memset(str, 0, sizeof(str));
+
+			writeLog(_info->_duration);
 		}
 		if (fmt_ctx->start_time != AV_NOPTS_VALUE) {
 			int secs, us;
 			secs = llabs(fmt_ctx->start_time / AV_TIME_BASE);
 			us = llabs(fmt_ctx->start_time % AV_TIME_BASE);
-			writeLog("start:%s%d.%06d",
-				fmt_ctx->start_time >= 0 ? "" : "-",
+
+			sprintf(str, "start:%s%d.%06d", fmt_ctx->start_time >= 0 ? "" : "-",
 				secs,
 				(int)av_rescale(us, 1000000, AV_TIME_BASE));
+			_info->_start = (char*)malloc(sizeof(str));
+			memcpy(_info->_start, str, sizeof(str));
+			memset(str, 0, sizeof(str));
+
+			writeLog(_info->_start);
 		}
-		if (fmt_ctx->bit_rate)
-			writeLog("%lld kb/s\n", fmt_ctx->bit_rate / 1000);
+		if (fmt_ctx->bit_rate) {
+			sprintf(str, "%lld kb/s\n", fmt_ctx->bit_rate / 1000);
+			_info->_bitrate = (char*)malloc(sizeof(str));
+			memcpy(_info->_bitrate, str, sizeof(str));
+			memset(str, 0, sizeof(str));
+
+			writeLog(_info->_bitrate);
+		}
 	}
 
 	for (i = 0; i < fmt_ctx->nb_streams; i++) {
@@ -135,13 +169,13 @@ int MediaFormat::parseFormat()
 	return 0;
 }
 
-int MediaFormat::parseStreamFormat(int i, int is_output)
+void MediaFormat::parseStreamFormat(int i, int is_output)
 {
 	char buf[256];
 	int flags = (is_output ? fmt_ctx->oformat->flags : fmt_ctx->iformat->flags);
 	AVStream *st = fmt_ctx->streams[i];
 	AVDictionaryEntry *lang = av_dict_get(st->metadata, "language", NULL, 0);
-	char *separator = fmt_ctx->dump_separator;
+	char *separator = (char *)fmt_ctx->dump_separator;
 	AVCodecContext *avctx;
 	int ret;
 
@@ -156,27 +190,27 @@ int MediaFormat::parseStreamFormat(int i, int is_output)
 	}
 
 	// Fields which are missing from AVCodecParameters need to be taken from the AVCodecContext
-	avctx->properties = st->codec->properties;
+	/*avctx->properties = st->codec->properties;
 	avctx->codec = st->codec->codec;
 	avctx->qmin = st->codec->qmin;
 	avctx->qmax = st->codec->qmax;
 	avctx->coded_width = st->codec->coded_width;
-	avctx->coded_height = st->codec->coded_height;
+	avctx->coded_height = st->codec->coded_height;*/
 
 	if (separator)
 		av_opt_set(avctx, "dump_separator", separator, 0);
 	avcodec_string(buf, sizeof(buf), avctx, is_output);
 	avcodec_free_context(&avctx);
 
-	av_log(NULL, AV_LOG_INFO, "    Stream #%d:%d", index, i);
+	writeLog("    Stream #%d", i);
 
 	if (flags & AVFMT_SHOW_IDS)
-		av_log(NULL, AV_LOG_INFO, "[0x%x]", st->id);
+		writeLog("[0x%x]", st->id);
 	if (lang)
-		av_log(NULL, AV_LOG_INFO, "(%s)", lang->value);
-	av_log(NULL, AV_LOG_DEBUG, ", %d, %d/%d", st->codec_info_nb_frames,
+		writeLog("(%s)", lang->value);
+	writeLog(", %d, %d/%d", st->codec_info_nb_frames,
 		st->time_base.num, st->time_base.den);
-	av_log(NULL, AV_LOG_INFO, ": %s", buf);
+	writeLog(": %s", buf);
 
 	if (st->sample_aspect_ratio.num &&
 		av_cmp_q(st->sample_aspect_ratio, st->codecpar->sample_aspect_ratio)) {
@@ -185,7 +219,7 @@ int MediaFormat::parseStreamFormat(int i, int is_output)
 			st->codecpar->width  * (int64_t)st->sample_aspect_ratio.num,
 			st->codecpar->height * (int64_t)st->sample_aspect_ratio.den,
 			1024 * 1024);
-		av_log(NULL, AV_LOG_INFO, ", SAR %d:%d DAR %d:%d",
+		writeLog(", SAR %d:%d DAR %d:%d",
 			st->sample_aspect_ratio.num, st->sample_aspect_ratio.den,
 			display_aspect_ratio.num, display_aspect_ratio.den);
 	}
@@ -194,10 +228,11 @@ int MediaFormat::parseStreamFormat(int i, int is_output)
 		int fps = st->avg_frame_rate.den && st->avg_frame_rate.num;
 		int tbr = st->r_frame_rate.den && st->r_frame_rate.num;
 		int tbn = st->time_base.den && st->time_base.num;
-		int tbc = st->codec->time_base.den && st->codec->time_base.num;
+		//int tbc = st->codecpar->time_base.den && st->codec->time_base.num;
+		int tbc = 0;
 
 		if (fps || tbr || tbn || tbc)
-			av_log(NULL, AV_LOG_INFO, "%s", separator);
+			writeLog("%s", separator);
 
 		if (fps)
 			print_fps(av_q2d(st->avg_frame_rate), tbr || tbn || tbc ? "fps, " : "fps");
@@ -205,10 +240,9 @@ int MediaFormat::parseStreamFormat(int i, int is_output)
 			print_fps(av_q2d(st->r_frame_rate), tbn || tbc ? "tbr, " : "tbr");
 		if (tbn)
 			print_fps(1 / av_q2d(st->time_base), tbc ? "tbn, " : "tbn");
-		if (tbc)
-			print_fps(1 / av_q2d(st->codec->time_base), "tbc");
+		/*if (tbc)
+			print_fps(1 / av_q2d(st->codec->time_base), "tbc");*/
 	}
-	return 0;
 }
 
 int MediaFormat::checkExtensions()
@@ -234,6 +268,19 @@ int MediaFormat::checkExtensions()
 	}
 	
 	return -1;
+}
+
+void MediaFormat::print_fps(double d, const char * postfix)
+{
+	uint64_t v = lrintf(d * 100);
+	if (!v)
+		writeLog("%1.4f %s", d, postfix);
+	else if (v % 100)
+		writeLog("%3.2f %s", d, postfix);
+	else if (v % (100 * 1000))
+		writeLog("%1.0f %s", d, postfix);
+	else
+		writeLog("%1.0fk %s", d / 1000, postfix);
 }
 
 InputInformation * MediaFormat::getInformation() const
