@@ -16,6 +16,7 @@
     <ClCompile Include="ffmpeg\MediaFormat.cpp" />
     <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
     <ClCompile Include="ffmpeg\OutputMediaFormat.cpp" />
+    <ClCompile Include="ffmpeg\MediaFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="ffmpeg\noncopyable.h" />
     <ClInclude Include="ffmpeg\InputMediaFormat.h" />
     <ClInclude Include="ffmpeg\OutputMediaFormat.h" />
+    <ClInclude Include="ffmpeg\MediaFilter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\avdevice-58.dll" />

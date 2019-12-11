@@ -176,6 +176,7 @@
     <ClInclude Include="ffmpeg\InputInformation.h" />
     <ClInclude Include="ffmpeg\InputMediaFormat.h" />
     <ClInclude Include="ffmpeg\Logger.h" />
+    <ClInclude Include="ffmpeg\MediaFilter.h" />
     <ClInclude Include="ffmpeg\MediaFormat.h" />
     <ClInclude Include="ffmpeg\Mutex.h" />
     <ClInclude Include="ffmpeg\noncopyable.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
     <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
+    <ClCompile Include="ffmpeg\MediaFilter.cpp" />
     <ClCompile Include="ffmpeg\MediaFormat.cpp" />
     <ClCompile Include="ffmpeg\OutputMediaFormat.cpp" />
     <ClCompile Include="ffmpeg\RtmpPusher.cpp" />

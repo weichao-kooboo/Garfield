@@ -1,6 +1,6 @@
 #include "OutputMediaFormat.h"
 
-OutputMediaFormat::OutputMediaFormat(const string &name, const weak_ptr<MediaFormat> &input_media_format)
+OutputMediaFormat::OutputMediaFormat(const string &name, const weak_ptr<InputMediaFormat> &input_media_format)
 	:MediaFormat(name, IO_TYPE_OUTPUT),
 	_input_media_format(input_media_format)
 {
@@ -147,4 +147,9 @@ int OutputMediaFormat::Open()
 	}
 
 	return 0;
+}
+
+weak_ptr<InputMediaFormat>& OutputMediaFormat::getInputMediaFormat()
+{
+	return _input_media_format;
 }
