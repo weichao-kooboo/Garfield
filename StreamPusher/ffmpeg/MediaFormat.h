@@ -14,6 +14,9 @@ enum IO_Type{
 	IO_TYPE_INPUT,
 	IO_TYPE_OUTPUT
 };
+typedef struct StreamContext {
+	AVCodecContext *ctx;
+} StreamContext;
 
 class MediaFormat :noncopyable {
 public:
@@ -23,31 +26,32 @@ public:
 	virtual int Open() = 0;
 	//获取格式的所有信息
 	InputInformation *getInformation() const;
-	void setLogger(std::weak_ptr<sp_log_t> logger);
-private:
-	typedef struct StreamContext {
-		AVCodecContext *ctx;
-	} StreamContext;
+	void setLogger(const std::weak_ptr<sp_log_t> &logger);
+	AVFormatContext *getFormatContext() const;
+	StreamContext *getStreamContext() const;
+	IO_Type getType() const;
+protected:
 	enum {
 		EXTEN_CAMERA,
 		EXTEN_FILE
 	}InputType;
 	string _name;
-	IO_Type _type;
-	std::shared_ptr<InputInformation> _info;
-	AVFormatContext *fmt_ctx;
-	StreamContext *stream_ctx;
-	//解析输入类型和格式
-	int parseFormat();
-	//解析输入流格式
-	void parseStreamFormat(int i, int is_output);
 	//解析输入文件的扩展名
 	//由于没有读取文件的头信息,所以在这里的输入类型判断基于输入字符串的扩展名.
 	//如果有扩展名,查看ffmpeg中是否支持该格式,
 	//没有扩展名默认表示摄像头名称
 	int checkExtensions();
-	void print_fps(double d, const char *postfix);
+	std::shared_ptr<InputInformation> _info;
+	AVFormatContext *fmt_ctx;
+	StreamContext *stream_ctx;
+	//解析输入类型和格式
+	int parseFormat();
 	void writeLog(const char *fmt, ...);
+private:
+	IO_Type _type;
+	//解析输入流格式
+	void parseStreamFormat(int i, int is_output);
+	void print_fps(double d, const char *postfix);
 	wpLog _logger;
 };
 

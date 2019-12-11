@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
 	//rp->setLogger(std::weak_ptr<sp_log_t>(s_log));
 	//rp->push(in_filename,out_filename);
 	in_filename = "video=XiaoMi USB 2.0 Webcam";
-	MediaFormat mf(in_filename, IO_TYPE_INPUT);
+	InputMediaFormat mf(in_filename);
 	
 	mf.setLogger(std::weak_ptr<sp_log_t>(s_log));
 	mf.Open();

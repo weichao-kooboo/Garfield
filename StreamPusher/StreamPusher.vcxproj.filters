@@ -14,6 +14,8 @@
     <ClCompile Include="ffmpeg\ShowDevices.cpp" />
     <ClCompile Include="ffmpeg\RtmpPusher.cpp" />
     <ClCompile Include="ffmpeg\MediaFormat.cpp" />
+    <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
+    <ClCompile Include="ffmpeg\OutputMediaFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
@@ -41,6 +43,8 @@
     <ClInclude Include="ffmpeg\Mutex.h" />
     <ClInclude Include="ffmpeg\MediaFormat.h" />
     <ClInclude Include="ffmpeg\noncopyable.h" />
+    <ClInclude Include="ffmpeg\InputMediaFormat.h" />
+    <ClInclude Include="ffmpeg\OutputMediaFormat.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\avdevice-58.dll" />
