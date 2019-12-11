@@ -195,6 +195,7 @@
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
     <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
+    <ClCompile Include="ffmpeg\Logger.cpp" />
     <ClCompile Include="ffmpeg\MediaFilter.cpp" />
     <ClCompile Include="ffmpeg\MediaFormat.cpp" />
     <ClCompile Include="ffmpeg\OutputMediaFormat.cpp" />

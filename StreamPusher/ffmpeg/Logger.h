@@ -3,24 +3,19 @@
 #define _SP_LOGGER_H_INCLUDED_
 
 #include "ffmpegHeader.h"
-using namespace std;
+#include "noncopyable.h"
 
-class Logger {
+typedef std::weak_ptr<sp_log_t> wpLog;
+typedef std::shared_ptr<sp_log_t> spLog;
+
+class Logger :noncopyable {
 public:
-	typedef std::shared_ptr<Logger> Ptr;
-	~Logger() {
-
-	}
-	Logger(Logger&) = delete;
-	Logger& operator=(const Logger&) = delete;
-	static Ptr get_instance() {
-
-	}
+	Logger(const std::weak_ptr<sp_log_t> &logger);
+	~Logger();
+	void writeLog(const char *fmt, ...);
+	void setLogger(const std::weak_ptr<sp_log_t> &logger);
 private:
-	Logger() {
-
-	}
-	static Ptr m_instance_ptr;
+	wpLog _logger;
 };
 
 #endif // !_SP_LOGGER_H_INCLUDED_

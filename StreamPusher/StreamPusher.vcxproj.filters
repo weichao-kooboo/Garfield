@@ -17,6 +17,7 @@
     <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
     <ClCompile Include="ffmpeg\OutputMediaFormat.cpp" />
     <ClCompile Include="ffmpeg\MediaFilter.cpp" />
+    <ClCompile Include="ffmpeg\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\local_config.h" />
