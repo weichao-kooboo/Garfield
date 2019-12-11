@@ -3,10 +3,11 @@
 #define _MEDIA_FILTER_H_INCLUDED_
 #include "ffmpegHeader.h"
 class OutputMediaFormat;
+class Logger;
 using namespace std;
 class MediaFilter {
 public:
-	MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format);
+	MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format,const weak_ptr<Logger> &logger);
 	~MediaFilter();
 	int init_filters(void);
 	void SetFilterSpec(const string &filter_spec);
@@ -21,6 +22,8 @@ private:
 	int init_filter(FilteringContext* fctx, AVCodecContext *dec_ctx,
 		AVCodecContext *enc_ctx, const char *filter_spec);
 	weak_ptr<OutputMediaFormat> _output_media_format;
+	weak_ptr<Logger> _logger;
+	void writeLog(const char * fmt, ...);
 };
 
 #endif // !_MEDIA_FILTER_H_INCLUDED_

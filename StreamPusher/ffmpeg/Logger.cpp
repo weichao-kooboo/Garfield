@@ -10,7 +10,7 @@ Logger::~Logger()
 	_logger.reset();
 }
 
-void Logger::writeLog(const char * fmt, ...)
+void Logger::writeLog(const char * fmt, va_list args)
 {
 	//todo lock
 	spLog local_logs = _logger.lock();
@@ -18,11 +18,11 @@ void Logger::writeLog(const char * fmt, ...)
 		sp_log_stderr(0, "logger pointer have been release");
 	}
 	sp_log_t* origin_ptr = &(*local_logs);
-	va_list  args;
+	//va_list  args;
 	if (origin_ptr->log_level >= SP_LOG_ALERT) {
-		va_start(args, fmt);
+		//va_start(args, fmt);
 		sp_log_error_msg(SP_LOG_ALERT, origin_ptr, 0, fmt, args);
-		va_end(args);
+		//va_end(args);
 	}
 }
 

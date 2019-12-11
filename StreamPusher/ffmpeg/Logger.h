@@ -12,7 +12,7 @@ class Logger :noncopyable {
 public:
 	Logger(const std::weak_ptr<sp_log_t> &logger);
 	~Logger();
-	void writeLog(const char *fmt, ...);
+	void writeLog(const char *fmt, va_list args);
 	void setLogger(const std::weak_ptr<sp_log_t> &logger);
 private:
 	wpLog _logger;

@@ -1,7 +1,7 @@
 #include "InputMediaFormat.h"
 
-InputMediaFormat::InputMediaFormat(const string &name) :
-	MediaFormat(name, IO_TYPE_INPUT)
+InputMediaFormat::InputMediaFormat(const string &name, const weak_ptr<Logger> &logger) :
+	MediaFormat(name, logger,  IO_TYPE_INPUT)
 {
 }
 

@@ -1,8 +1,11 @@
 #include "MediaFilter.h"
 #include "OutputMediaFormat.h"
+#include "Logger.h"
 
-MediaFilter::MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format) :
-	_output_media_format(output_media_format)
+MediaFilter::MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format,
+	const weak_ptr<Logger> &logger):
+	_output_media_format(output_media_format),
+	_logger(logger)
 {
 }
 
@@ -80,7 +83,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 		buffersrc = avfilter_get_by_name("buffer");
 		buffersink = avfilter_get_by_name("buffersink");
 		if (!buffersrc || !buffersink) {
-			av_log(NULL, AV_LOG_ERROR, "filtering source or sink element not found\n");
+			writeLog("filtering source or sink element not found\n");
 			ret = AVERROR_UNKNOWN;
 			goto end;
 		}
@@ -95,14 +98,14 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in",
 			args, NULL, filter_graph);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot create buffer source\n");
+			writeLog("Cannot create buffer source\n");
 			goto end;
 		}
 
 		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out",
 			NULL, NULL, filter_graph);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot create buffer sink\n");
+			writeLog("Cannot create buffer sink\n");
 			goto end;
 		}
 
@@ -110,7 +113,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 			(uint8_t*)&enc_ctx->pix_fmt, sizeof(enc_ctx->pix_fmt),
 			AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot set output pixel format\n");
+			writeLog("Cannot set output pixel format\n");
 			goto end;
 		}
 	}
@@ -118,7 +121,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 		buffersrc = avfilter_get_by_name("abuffer");
 		buffersink = avfilter_get_by_name("abuffersink");
 		if (!buffersrc || !buffersink) {
-			av_log(NULL, AV_LOG_ERROR, "filtering source or sink element not found\n");
+			writeLog("filtering source or sink element not found\n");
 			ret = AVERROR_UNKNOWN;
 			goto end;
 		}
@@ -134,14 +137,14 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in",
 			args, NULL, filter_graph);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer source\n");
+			writeLog("Cannot create audio buffer source\n");
 			goto end;
 		}
 
 		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out",
 			NULL, NULL, filter_graph);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
+			writeLog("Cannot create audio buffer sink\n");
 			goto end;
 		}
 
@@ -149,7 +152,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 			(uint8_t*)&enc_ctx->sample_fmt, sizeof(enc_ctx->sample_fmt),
 			AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot set output sample format\n");
+			writeLog("Cannot set output sample format\n");
 			goto end;
 		}
 
@@ -157,7 +160,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 			(uint8_t*)&enc_ctx->channel_layout,
 			sizeof(enc_ctx->channel_layout), AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot set output channel layout\n");
+			writeLog("Cannot set output channel layout\n");
 			goto end;
 		}
 
@@ -165,7 +168,7 @@ int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, 
 			(uint8_t*)&enc_ctx->sample_rate, sizeof(enc_ctx->sample_rate),
 			AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot set output sample rate\n");
+			writeLog("Cannot set output sample rate\n");
 			goto end;
 		}
 	}
@@ -205,4 +208,17 @@ end:
 	avfilter_inout_free(&inputs);
 	avfilter_inout_free(&outputs);
 	return 0;
+}
+
+void MediaFilter::writeLog(const char * fmt, ...)
+{
+	//todo lock
+	shared_ptr<Logger> local_logs = _logger.lock();
+	if (!local_logs) {
+		sp_log_stderr(0, "logger pointer have been release");
+	}
+	va_list  args;
+	va_start(args, fmt);
+	local_logs->writeLog(fmt, args);
+	va_end(args);
 }

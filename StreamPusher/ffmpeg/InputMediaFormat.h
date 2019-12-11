@@ -4,7 +4,7 @@
 #include "MediaFormat.h"
 class InputMediaFormat :public MediaFormat {
 public:
-	InputMediaFormat(const string &name);
+	InputMediaFormat(const string &name, const weak_ptr<Logger> &logger);
 	~InputMediaFormat();
 	int Open() override;
 };

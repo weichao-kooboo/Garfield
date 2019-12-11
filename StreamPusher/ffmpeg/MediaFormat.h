@@ -5,10 +5,8 @@
 #include "ffmpegHeader.h"
 #include "noncopyable.h"
 class InputInformation;
+class Logger;
 using namespace std;
-
-typedef std::weak_ptr<sp_log_t> wpLog;
-typedef std::shared_ptr<sp_log_t> spLog;
 
 enum IO_Type{
 	IO_TYPE_INPUT,
@@ -21,12 +19,12 @@ typedef struct StreamContext {
 class MediaFormat :noncopyable {
 public:
 	MediaFormat(const string &name,
+		const weak_ptr<Logger> &logger,
 		IO_Type type = IO_TYPE_INPUT);
 	~MediaFormat();
 	virtual int Open() = 0;
 	//获取格式的所有信息
 	InputInformation *getInformation() const;
-	void setLogger(const std::weak_ptr<sp_log_t> &logger);
 	AVFormatContext *getFormatContext() const;
 	StreamContext *getStreamContext() const;
 	IO_Type getType() const;
@@ -46,13 +44,13 @@ protected:
 	StreamContext *stream_ctx;
 	//解析输入类型和格式
 	int parseFormat();
-	void writeLog(const char *fmt, ...);
+	void writeLog(const char * fmt, ...);
 private:
 	IO_Type _type;
 	//解析输入流格式
 	void parseStreamFormat(int i, int is_output);
 	void print_fps(double d, const char *postfix);
-	wpLog _logger;
+    weak_ptr<Logger> _logger;
 };
 
 #endif // !_MEDIA_FORMAT_H_INCLUDED_

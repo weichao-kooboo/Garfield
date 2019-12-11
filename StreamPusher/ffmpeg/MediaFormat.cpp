@@ -1,11 +1,14 @@
 #include "MediaFormat.h"
 #include "InputInformation.h"
+#include "Logger.h"
 
 
 MediaFormat::MediaFormat(const string &name,
+	const weak_ptr<Logger> &logger,
 	IO_Type type)
 	:_name(name),
 	_type(type),
+	_logger(logger),
 	_info(new InputInformation())
 {
 }
@@ -219,17 +222,6 @@ InputInformation * MediaFormat::getInformation() const
 	return &(*_info);
 }
 
-void MediaFormat::setLogger(const std::weak_ptr<sp_log_t> &logger)
-{
-	std::weak_ptr<sp_log_t> local_log;
-	{
-		//todo:lock log obj
-		_logger.swap(local_log);
-		_logger = logger;
-	}
-	local_log.reset();
-}
-
 AVFormatContext * MediaFormat::getFormatContext() const
 {
 	return fmt_ctx;
@@ -249,15 +241,12 @@ IO_Type MediaFormat::getType() const
 void MediaFormat::writeLog(const char *fmt, ...)
 {
 	//todo lock
-	spLog local_logs = _logger.lock();
+	shared_ptr<Logger> local_logs = _logger.lock();
 	if (!local_logs) {
 		sp_log_stderr(0, "logger pointer have been release");
 	}
-	sp_log_t* origin_ptr = &(*local_logs);
 	va_list  args;
-	if (origin_ptr->log_level >= SP_LOG_ALERT) {
-		va_start(args, fmt);
-		sp_log_error_msg(SP_LOG_ALERT, origin_ptr, 0, fmt, args);
-		va_end(args);
-	}
+	va_start(args, fmt);
+	local_logs->writeLog(fmt, args);
+	va_end(args);
 }

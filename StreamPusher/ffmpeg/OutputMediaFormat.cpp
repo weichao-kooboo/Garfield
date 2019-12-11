@@ -1,7 +1,9 @@
 #include "OutputMediaFormat.h"
 
-OutputMediaFormat::OutputMediaFormat(const string &name, const weak_ptr<InputMediaFormat> &input_media_format)
-	:MediaFormat(name, IO_TYPE_OUTPUT),
+OutputMediaFormat::OutputMediaFormat(const string &name, 
+	const weak_ptr<Logger> &logger,
+	const weak_ptr<InputMediaFormat> &input_media_format)
+	:MediaFormat(name, logger, IO_TYPE_OUTPUT),
 	_input_media_format(input_media_format)
 {
 
