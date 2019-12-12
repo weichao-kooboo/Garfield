@@ -1,7 +1,4 @@
 #include "FFmpeg.h"
-#include "MediaFilter.h"
-#include "OutputMediaFormat.h"
-#include "InputMediaFormat.h"
 #include "Logger.h"
 
 FFmpeg::FFmpeg(const weak_ptr<Logger>& logger):
@@ -25,11 +22,12 @@ int FFmpeg::start(InputMediaFormat & input_media_format, OutputMediaFormat & out
 }
 
 
-void FFmpeg::readFrameLoop()
+int FFmpeg::readFrameLoop()
 {
 	int ret;
 	AVPacket packet;
 	AVFrame *frame = NULL;
+	unsigned int i;
 	unsigned int stream_index;
 	enum AVMediaType type;
 
@@ -58,12 +56,83 @@ void FFmpeg::readFrameLoop()
 				break;
 			}
 		}
+		else {
+			/* remux this frame without reencoding */
+			av_packet_rescale_ts(&packet,
+				ifmt_ctx->streams[stream_index]->time_base,
+				ofmt_ctx->streams[stream_index]->time_base);
+
+			ret = av_interleaved_write_frame(ofmt_ctx, &packet);
+			if (ret < 0)
+				goto end;
+		}
+		av_packet_unref(&packet);
 	}
+	/* flush filters and encoders */
+	for (i = 0; i < ifmt_ctx->nb_streams; i++) {
+		/* flush filter */
+		if (!filter_ctx[i].filter_graph)
+			continue;
+		ret = filterDecodeReadFrame(NULL, i);
+		if (ret < 0) {
+			av_log(NULL, AV_LOG_ERROR, "Flushing filter failed\n");
+			goto end;
+		}
+
+		/* flush encoder */
+		ret = flushEncoder(i);
+		if (ret < 0) {
+			av_log(NULL, AV_LOG_ERROR, "Flushing encoder failed\n");
+			goto end;
+		}
+	}
+
+	av_write_trailer(ofmt_ctx);
+
+end:
+	av_packet_unref(&packet);
+	av_frame_free(&frame);
+
+	if (ret < 0)
+		av_log(NULL, AV_LOG_ERROR, "Error occurred:\n");
+
+	return ret ? 1 : 0;
 }
 
-int FFmpeg::encodeCallBack(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame * pFrame, unsigned int stream_index)
+int FFmpeg::encodeCallBack(AVCodecContext *pCodecContext, AVFrame *pFrame, AVPacket *pPacket, unsigned int stream_index)
 {
-	return 0;
+	int ret;
+
+	/* send the frame to the encoder */
+	if (pFrame) {
+		printf("pts %d\n", pFrame->pts);
+	}
+
+	ret = avcodec_send_frame(pCodecContext, pFrame);
+	if (ret < 0) {
+		//fprintf(stderr, "Error sending a frame for encoding\n");
+		return -1;
+	}
+
+	while (ret >= 0) {
+		ret = avcodec_receive_packet(pCodecContext, pPacket);
+		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+			return 0;
+		else if (ret < 0) {
+			//fprintf(stderr, "Error during encoding\n");
+			return ret;
+		}
+
+		/* prepare packet for muxing */
+		pPacket->stream_index = stream_index;
+		av_packet_rescale_ts(pPacket,
+			ostream_ctx[stream_index].ctx->time_base,
+			ofmt_ctx->streams[stream_index]->time_base);
+
+		av_log(NULL, AV_LOG_DEBUG, "Muxing frame\n");
+		/* mux encoded frame */
+		ret = av_interleaved_write_frame(ofmt_ctx, pPacket);
+	}
 }
 
 int FFmpeg::decodeCallBack(AVPacket * pPacket, AVCodecContext * pCodecContext, AVFrame * pFrame, unsigned int stream_index)
@@ -100,7 +169,7 @@ int FFmpeg::decodeCallBack(AVPacket * pPacket, AVCodecContext * pCodecContext, A
 
 
 			pFrame->pts = pFrame->best_effort_timestamp;
-			ret = filterEncodeWriteFrame(pFrame, stream_index);
+			ret = filterDecodeReadFrame(pFrame, stream_index);
 			//av_frame_free(&frame);
 			if (ret < 0) {
 				return ret;
@@ -111,7 +180,7 @@ int FFmpeg::decodeCallBack(AVPacket * pPacket, AVCodecContext * pCodecContext, A
 	return 0;
 }
 
-int FFmpeg::filterEncodeWriteFrame(AVFrame * frame, unsigned int stream_index)
+int FFmpeg::filterDecodeReadFrame(AVFrame * frame, unsigned int stream_index)
 {
 	int ret;
 	AVFrame *filt_frame;
@@ -147,11 +216,48 @@ int FFmpeg::filterEncodeWriteFrame(AVFrame * frame, unsigned int stream_index)
 		}
 
 		filt_frame->pict_type = AV_PICTURE_TYPE_NONE;
-		ret = encode_write_frame(filt_frame, stream_index);
+		ret = encodeWriteFrame(filt_frame, stream_index);
 		if (ret < 0)
 			break;
 	}
 
+	return ret;
+}
+
+int FFmpeg::encodeWriteFrame(AVFrame * filt_frame, unsigned int stream_index)
+{
+	int ret;
+	AVPacket enc_pkt;
+
+	av_log(NULL, AV_LOG_INFO, "Encoding frame\n");
+	/* encode filtered frame */
+	enc_pkt.data = NULL;
+	enc_pkt.size = 0;
+	av_init_packet(&enc_pkt);
+	ret = encodeCallBack(ostream_ctx[stream_index].ctx, filt_frame, &enc_pkt, stream_index);
+	av_frame_free(&filt_frame);
+	if (ret < 0)
+		return ret;
+
+	//todo
+	av_packet_unref(&enc_pkt);
+	return ret;
+}
+
+int FFmpeg::flushEncoder(unsigned int stream_index)
+{
+	int ret;
+
+	if (!(ostream_ctx[stream_index].ctx->codec->capabilities &
+		AV_CODEC_CAP_DELAY))
+		return 0;
+
+	while (1) {
+		av_log(NULL, AV_LOG_INFO, "Flushing stream #%u encoder\n", stream_index);
+		ret = encodeWriteFrame(NULL, stream_index);
+		if (ret < 0)
+			break;
+	}
 	return ret;
 }
 

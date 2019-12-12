@@ -36,7 +36,13 @@ MediaFormat::~MediaFormat()
 		avcodec_free_context(&stream_ctx[i].ctx);
 	}
 	av_free(stream_ctx);
-	avformat_close_input(&fmt_ctx);  
+	if (_type == IO_TYPE_INPUT)
+		avformat_close_input(&fmt_ctx);
+	else {
+		if (fmt_ctx && !(fmt_ctx->oformat->flags & AVFMT_NOFILE))
+			avio_closep(&fmt_ctx->pb);
+		avformat_free_context(fmt_ctx);
+	}
 }
 
 int MediaFormat::parseFormat()

@@ -21,6 +21,7 @@ public:
 	void SetFilterSpec(const string &filter_spec);
 	FilteringContext *getFilteringCtx() const;
 private:
+	unsigned int streams_count;
 	FilteringContext *_filter_ctx;
 	string _filter_spec;
 	int init_filter(FilteringContext* fctx, AVCodecContext *dec_ctx,

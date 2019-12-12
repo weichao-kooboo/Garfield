@@ -3,8 +3,8 @@
 #define	_SP_FFMPEG_H_INCLUDED_
 #include "ffmpegHeader.h"
 #include "MediaFilter.h";
-class InputMediaFormat;
-class OutputMediaFormat;
+#include "InputMediaFormat.h";
+#include "OutputMediaFormat.h";
 class Logger;
 using namespace std;
 
@@ -14,10 +14,12 @@ public:
 	~FFmpeg();
 	int start(InputMediaFormat &input_media_format, OutputMediaFormat &output_media_format, MediaFilter &_filter_ctx);
 private:
-	void readFrameLoop();
-	int encodeCallBack(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame, unsigned int stream_index);
+	int readFrameLoop();
+	int encodeCallBack(AVCodecContext *pCodecContext, AVFrame *pFrame, AVPacket *pPacket, unsigned int stream_index);
 	int decodeCallBack(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame, unsigned int stream_index);
-	int filterEncodeWriteFrame(AVFrame *frame, unsigned int stream_index);
+	int filterDecodeReadFrame(AVFrame *frame, unsigned int stream_index);
+	int encodeWriteFrame(AVFrame *filt_frame, unsigned int stream_index);
+	int flushEncoder(unsigned int stream_index);
 	AVFormatContext *ifmt_ctx;
 	StreamContext *istream_ctx;
 	AVFormatContext *ofmt_ctx;

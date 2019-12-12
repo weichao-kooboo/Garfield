@@ -4,13 +4,18 @@
 #include "Logger.h"
 
 MediaFilter::MediaFilter(const weak_ptr<Logger> &logger):
-	_logger(logger)
+	_logger(logger),
+	streams_count(0)
 {
 }
 
 MediaFilter::~MediaFilter()
 {
 	//fixed me
+	for (unsigned int i = 0; i < streams_count; i++) {
+		if (_filter_ctx && _filter_ctx[i].filter_graph)
+			avfilter_graph_free(&_filter_ctx[i].filter_graph);
+	}
 	free(_filter_ctx);
 }
 
@@ -25,7 +30,8 @@ int MediaFilter::init_filters(InputMediaFormat &input_media_format,OutputMediaFo
 	ifmt_ctx = input_media_format.getFormatContext();
 	istream_ctx = input_media_format.getStreamContext();
 	ostream_ctx = output_media_format.getStreamContext();
-	_filter_ctx = (FilteringContext*)av_malloc_array(ifmt_ctx->nb_streams, sizeof(*_filter_ctx));
+	streams_count = ifmt_ctx->nb_streams;
+	_filter_ctx = (FilteringContext*)av_malloc_array(streams_count, sizeof(*_filter_ctx));
 	if (!_filter_ctx)
 		return AVERROR(ENOMEM);
 
