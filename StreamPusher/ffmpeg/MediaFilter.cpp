@@ -2,7 +2,7 @@
 #include "OutputMediaFormat.h"
 #include "Logger.h"
 
-MediaFilter::MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format,
+MediaFilter::MediaFilter(const shared_ptr<OutputMediaFormat> &output_media_format,
 	const weak_ptr<Logger> &logger):
 	_output_media_format(output_media_format),
 	_logger(logger)
@@ -11,6 +11,8 @@ MediaFilter::MediaFilter(const weak_ptr<OutputMediaFormat> &output_media_format,
 
 MediaFilter::~MediaFilter()
 {
+	_filter_ctx.reset();
+	_output_media_format.reset();
 }
 
 int MediaFilter::init_filters(void)
@@ -19,26 +21,26 @@ int MediaFilter::init_filters(void)
 	int ret;
 	AVFormatContext *ifmt_ctx;
 	StreamContext *istream_ctx, *ostream_ctx;
+	FilteringContext * local_filter_ctx;
 
-	shared_ptr<OutputMediaFormat> local_output_media_format = _output_media_format.lock();
-	if (!local_output_media_format) {
-		av_log(NULL, AV_LOG_ERROR, "input media format pointer have been release");
-	}
-	shared_ptr<InputMediaFormat> local_input_media_format = local_output_media_format->getInputMediaFormat().lock();
+	shared_ptr<InputMediaFormat> local_input_media_format = _output_media_format->getInputMediaFormat().lock();
 	if (!local_input_media_format) {
-		av_log(NULL, AV_LOG_ERROR, "input media format pointer have been release");
+		writeLog("input media format pointer have been release");
+		return AVERROR(ENOMEM);
 	}
 	ifmt_ctx = local_input_media_format->getFormatContext();
 	istream_ctx = local_input_media_format->getStreamContext();
-	ostream_ctx = local_output_media_format->getStreamContext();
-	_filter_ctx = (FilteringContext*)av_malloc_array(ifmt_ctx->nb_streams, sizeof(*_filter_ctx));
-	if (!_filter_ctx)
+	ostream_ctx = _output_media_format->getStreamContext();
+	local_filter_ctx = (FilteringContext*)av_malloc_array(ifmt_ctx->nb_streams, sizeof(*_filter_ctx));
+	if (!local_filter_ctx)
 		return AVERROR(ENOMEM);
+	_filter_ctx = shared_ptr<FilteringContext>(local_filter_ctx);
+	writeLog("filter use count %ld", _filter_ctx.use_count());
 
 	for (i = 0; i < ifmt_ctx->nb_streams; i++) {
-		_filter_ctx[i].buffersrc_ctx = NULL;
-		_filter_ctx[i].buffersink_ctx = NULL;
-		_filter_ctx[i].filter_graph = NULL;
+		local_filter_ctx[i].buffersrc_ctx = NULL;
+		local_filter_ctx[i].buffersink_ctx = NULL;
+		local_filter_ctx[i].filter_graph = NULL;
 		if (!(ifmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO
 			|| ifmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO))
 			continue;
@@ -50,7 +52,7 @@ int MediaFilter::init_filters(void)
 				_filter_spec = "anull"; /* passthrough (dummy) filter for audio */
 		}
 
-		ret = init_filter(&_filter_ctx[i], istream_ctx[i].ctx,
+		ret = init_filter(&local_filter_ctx[i], istream_ctx[i].ctx,
 			ostream_ctx[i].ctx, _filter_spec.c_str());
 		if (ret)
 			return ret;
@@ -61,6 +63,16 @@ int MediaFilter::init_filters(void)
 void MediaFilter::SetFilterSpec(const string & filter_spec)
 {
 	_filter_spec = filter_spec;
+}
+
+weak_ptr<OutputMediaFormat> MediaFilter::getOutputMediaFormat() const
+{
+	return weak_ptr<OutputMediaFormat>(_output_media_format);
+}
+
+weak_ptr<FilteringContext> MediaFilter::getFilteringCtx() const
+{
+	return weak_ptr<FilteringContext>(_filter_ctx);
 }
 
 int MediaFilter::init_filter(FilteringContext * fctx, AVCodecContext * dec_ctx, AVCodecContext * enc_ctx, const char * filter_spec)

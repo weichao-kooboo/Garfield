@@ -2,7 +2,7 @@
 
 OutputMediaFormat::OutputMediaFormat(const string &name, 
 	const weak_ptr<Logger> &logger,
-	const weak_ptr<InputMediaFormat> &input_media_format)
+	const shared_ptr<InputMediaFormat> &input_media_format)
 	:MediaFormat(name, logger, IO_TYPE_OUTPUT),
 	_input_media_format(input_media_format)
 {
@@ -37,17 +37,12 @@ int OutputMediaFormat::Open()
 		return AVERROR_UNKNOWN;
 	}
 
-	//todo lock
-	shared_ptr<MediaFormat> local_input_media_format = _input_media_format.lock();
-	if (!local_input_media_format) {
-		writeLog("input media format pointer have been release");
-	}
-	if (local_input_media_format->getType() != IO_TYPE_INPUT) {
+	if (_input_media_format->getType() != IO_TYPE_INPUT) {
 		writeLog("input media format isn't input format");
 		return AVERROR_UNKNOWN;
 	}
-	ifmt_ctx = local_input_media_format->getFormatContext();
-	istream_ctx = local_input_media_format->getStreamContext();
+	ifmt_ctx = _input_media_format->getFormatContext();
+	istream_ctx = _input_media_format->getStreamContext();
 
 	for (i = 0; i < ifmt_ctx->nb_streams; i++) {
 		out_stream = avformat_new_stream(fmt_ctx, NULL);
@@ -151,7 +146,7 @@ int OutputMediaFormat::Open()
 	return 0;
 }
 
-weak_ptr<InputMediaFormat>& OutputMediaFormat::getInputMediaFormat()
+weak_ptr<InputMediaFormat> OutputMediaFormat::getInputMediaFormat()
 {
-	return _input_media_format;
+	return weak_ptr<InputMediaFormat>(_input_media_format);
 }

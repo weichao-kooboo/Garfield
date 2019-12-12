@@ -36,7 +36,7 @@ MediaFormat::~MediaFormat()
 		avcodec_free_context(&stream_ctx[i].ctx);
 	}
 	av_free(stream_ctx);
-	avformat_close_input(&fmt_ctx);
+	avformat_close_input(&fmt_ctx);  
 }
 
 int MediaFormat::parseFormat()

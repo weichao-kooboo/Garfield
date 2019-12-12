@@ -172,6 +172,7 @@
     <ClInclude Include="core\win_os.h" />
     <ClInclude Include="core\win_time.h" />
     <ClInclude Include="ffmpeg\export.h" />
+    <ClInclude Include="ffmpeg\FFmpeg.h" />
     <ClInclude Include="ffmpeg\ffmpegHeader.h" />
     <ClInclude Include="ffmpeg\InputInformation.h" />
     <ClInclude Include="ffmpeg\InputMediaFormat.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="core\win_event_log.c" />
     <ClCompile Include="core\win_files.c" />
     <ClCompile Include="core\win_time.c" />
+    <ClCompile Include="ffmpeg\FFmpeg.cpp" />
     <ClCompile Include="ffmpeg\InputMediaFormat.cpp" />
     <ClCompile Include="ffmpeg\Logger.cpp" />
     <ClCompile Include="ffmpeg\MediaFilter.cpp" />
