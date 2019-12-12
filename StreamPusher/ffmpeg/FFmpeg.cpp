@@ -4,55 +4,35 @@
 #include "InputMediaFormat.h"
 #include "Logger.h"
 
-FFmpeg::FFmpeg(const shared_ptr<MediaFilter>& mediaFilter, const weak_ptr<Logger>& logger)
-	:_mediaFilter(mediaFilter),
+FFmpeg::FFmpeg(const weak_ptr<Logger>& logger):
 	_logger(logger)
 {
-	codeCallBack cb = std::bind(&FFmpeg::decodeCallBack, this, _1, _2, _3, _4);
 }
 
 FFmpeg::~FFmpeg()
 {
-	_mediaFilter.reset();
 }
 
-int FFmpeg::start()
+int FFmpeg::start(InputMediaFormat & input_media_format, OutputMediaFormat & output_media_format, MediaFilter & _filter_ctx)
 {
-	shared_ptr<FilteringContext> filter_ctx = _mediaFilter->getFilteringCtx().lock();
-	if (!filter_ctx) {
-		writeLog("the filter ctx pointer have been release");
-		return AVERROR(ENOMEM);
-	}
-	shared_ptr<OutputMediaFormat> output_format = _mediaFilter->getOutputMediaFormat().lock();
-	if (!output_format) {
-		writeLog("the output format pointer have been release");
-		return AVERROR(ENOMEM);
-	}
-	shared_ptr<InputMediaFormat> input_format = output_format->getInputMediaFormat().lock();
-	if (!input_format) {
-		writeLog("the input format pointer have been release");
-		return AVERROR(ENOMEM);
-	}
+	ifmt_ctx = input_media_format.getFormatContext();
+	istream_ctx = input_media_format.getStreamContext();
+	ofmt_ctx = output_media_format.getFormatContext();
+	ostream_ctx = output_media_format.getStreamContext();
+	filter_ctx = _filter_ctx.getFilteringCtx();
 
+	return 0;
 }
 
 
-void FFmpeg::readFrameLoop(shared_ptr<FilteringContext>& _filter_ctx
-	, shared_ptr<OutputMediaFormat>& _output_format
-	, shared_ptr<InputMediaFormat>& _input_format)
+void FFmpeg::readFrameLoop()
 {
 	int ret;
 	AVPacket packet;
 	AVFrame *frame = NULL;
-	AVFormatContext *ifmt_ctx;
 	unsigned int stream_index;
 	enum AVMediaType type;
-	FilteringContext *filter_ctx;
-	StreamContext *stream_ctx;
 
-	ifmt_ctx = _input_format->getFormatContext();
-	filter_ctx = &(*_filter_ctx);
-	stream_ctx = _input_format->getStreamContext();
 	while (1) {
 		if ((ret = av_read_frame(ifmt_ctx, &packet)) < 0)
 			break;
@@ -70,8 +50,8 @@ void FFmpeg::readFrameLoop(shared_ptr<FilteringContext>& _filter_ctx
 			}
 			av_packet_rescale_ts(&packet,
 				ifmt_ctx->streams[stream_index]->time_base,
-				stream_ctx[stream_index].ctx->time_base);
-			ret = decodeCallBack(&packet, stream_ctx[stream_index].ctx, frame, stream_index);
+				istream_ctx[stream_index].ctx->time_base);
+			ret = decodeCallBack(&packet, istream_ctx[stream_index].ctx, frame, stream_index);
 			if (ret < 0) {
 				av_frame_free(&frame);
 				writeLog("Decoding failed\n");

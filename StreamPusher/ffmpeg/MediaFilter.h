@@ -3,6 +3,7 @@
 #define _MEDIA_FILTER_H_INCLUDED_
 #include "ffmpegHeader.h"
 class OutputMediaFormat;
+class InputMediaFormat;
 class Logger;
 using namespace std;
 
@@ -14,18 +15,16 @@ typedef struct FilteringContext {
 
 class MediaFilter {
 public:
-	MediaFilter(const shared_ptr<OutputMediaFormat> &output_media_format,const weak_ptr<Logger> &logger);
+	MediaFilter(const weak_ptr<Logger> &logger);
 	~MediaFilter();
-	int init_filters(void);
+	int init_filters(InputMediaFormat &input_media_format, OutputMediaFormat &output_media_format);
 	void SetFilterSpec(const string &filter_spec);
-	weak_ptr<OutputMediaFormat> getOutputMediaFormat() const;
-	weak_ptr<FilteringContext> getFilteringCtx() const;
+	FilteringContext *getFilteringCtx() const;
 private:
-	shared_ptr<FilteringContext> _filter_ctx;
+	FilteringContext *_filter_ctx;
 	string _filter_spec;
 	int init_filter(FilteringContext* fctx, AVCodecContext *dec_ctx,
 		AVCodecContext *enc_ctx, const char *filter_spec);
-	shared_ptr<OutputMediaFormat> _output_media_format;
 	weak_ptr<Logger> _logger;
 	void writeLog(const char * fmt, ...);
 };
