@@ -3,9 +3,10 @@
 #include "OutputMediaFormat.h"
 #include "Logger.h"
 
-MediaFilter::MediaFilter(const weak_ptr<Logger> &logger):
+MediaFilter::MediaFilter(const weak_ptr<Logger> &logger) :
 	_logger(logger),
-	streams_count(0)
+	streams_count(0),
+	_filter_spec("drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='Lei Xiaohua'")
 {
 }
 

@@ -17,7 +17,7 @@ int FFmpeg::start(InputMediaFormat & input_media_format, OutputMediaFormat & out
 	ofmt_ctx = output_media_format.getFormatContext();
 	ostream_ctx = output_media_format.getStreamContext();
 	filter_ctx = _filter_ctx.getFilteringCtx();
-
+	readFrameLoop();
 	return 0;
 }
 

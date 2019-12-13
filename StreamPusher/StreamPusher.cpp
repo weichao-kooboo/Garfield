@@ -48,10 +48,17 @@ int main(int argc, const char *argv[])
 	in_filename = "video=XiaoMi USB 2.0 Webcam";
 
 	shared_ptr<Logger> logger(new Logger(std::weak_ptr<sp_log_t>(s_log)));
-	
-	InputMediaFormat mf(in_filename, weak_ptr<Logger>(logger));
-	
-	mf.Open();
+	InputMediaFormat ifmt(in_filename, weak_ptr<Logger>(logger));
+	ifmt.Open();
+
+	OutputMediaFormat ofmt(out_filename, weak_ptr<Logger>(logger));
+	ofmt.Open(ifmt);
+
+	MediaFilter mfilter(logger);
+	mfilter.init_filters(ifmt, ofmt);
+
+	FFmpeg ffmpeg(logger);
+	ffmpeg.start(ifmt, ofmt, mfilter);
 
 
 	return 0;

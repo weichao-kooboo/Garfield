@@ -7,6 +7,7 @@ public:
 	OutputMediaFormat(const string &name,
 		const weak_ptr<Logger> &logger);
 	~OutputMediaFormat();
+	int Open() override;
 	int Open(InputMediaFormat &_input_media_format);
 };
 

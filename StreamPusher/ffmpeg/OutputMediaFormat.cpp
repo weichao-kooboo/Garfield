@@ -12,6 +12,11 @@ OutputMediaFormat::~OutputMediaFormat()
 
 }
 
+int OutputMediaFormat::Open()
+{
+	return 0;
+}
+
 int OutputMediaFormat::Open(InputMediaFormat &_input_media_format)
 {
 	AVStream *out_stream;
@@ -41,6 +46,10 @@ int OutputMediaFormat::Open(InputMediaFormat &_input_media_format)
 	}
 	ifmt_ctx = _input_media_format.getFormatContext();
 	istream_ctx = _input_media_format.getStreamContext();
+
+	stream_ctx = (StreamContext*)av_mallocz_array(ifmt_ctx->nb_streams, sizeof(*stream_ctx));
+	if (!stream_ctx)
+		return AVERROR(ENOMEM);
 
 	for (i = 0; i < ifmt_ctx->nb_streams; i++) {
 		out_stream = avformat_new_stream(fmt_ctx, NULL);
