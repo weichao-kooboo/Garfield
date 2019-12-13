@@ -275,7 +275,7 @@ sp_log_error_core(sp_uint_t level, sp_log_t *log, sp_err_t err,
 
 	msg -= (7 + err_levels[level].len + 3);
 
-	(void)sp_sprintf(msg, "nginx: [%V] ", &err_levels[level]);
+	(void)sp_sprintf(msg, "streamPusher: [%V] ", &err_levels[level]);
 
 	(void)sp_write_console(sp_stderr, msg, p - msg);
 }
@@ -294,6 +294,12 @@ sp_log_error(sp_uint_t level, sp_log_t *log, sp_err_t err,
 		sp_log_error_core(level, log, err, fmt, args);
 		va_end(args);
 	}
+}
+
+void sp_cdecl 
+sp_log_error_msg(sp_uint_t level, sp_log_t *log, sp_err_t err,
+	const char *fmt, va_list args) {
+	sp_log_error_core(level, log, err, fmt, args);
 }
 
 

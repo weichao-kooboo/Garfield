@@ -44,7 +44,7 @@ sp_event_log(sp_err_t err, const char *fmt, ...)
 	 */
 
 	if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
-		"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\nginx",
+		"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\streamPusher",
 		0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &key, NULL)
 		!= 0)
 	{
@@ -69,7 +69,7 @@ sp_event_log(sp_err_t err, const char *fmt, ...)
 
 	RegCloseKey(key);
 
-	ev = RegisterEventSource(NULL, "nginx");
+	ev = RegisterEventSource(NULL, "streamPusher");
 
 	msgarg[0] = (char *)text;
 	msgarg[1] = NULL;

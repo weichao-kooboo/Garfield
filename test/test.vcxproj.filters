@@ -369,6 +369,12 @@
     <ClInclude Include="FFmpegMethods.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AvioReading.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="leixiaoye_transcoding.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -381,6 +387,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="FFmpegMethods.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AvioReading.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="leixiaoye_transcoding.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

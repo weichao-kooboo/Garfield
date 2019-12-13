@@ -15,6 +15,9 @@ typedef uint64_t                    sp_file_uniq_t;
 #define SP_LINEFEED_SIZE           2
 #define SP_LINEFEED                CRLF
 
+#define SP_INVALID_FILE         -1
+#define SP_FILE_ERROR           -1
+
 sp_fd_t sp_open_file(u_char *name, u_long mode, u_long create, u_long access);
 #define sp_open_file_n             "CreateFile()"
 
@@ -36,6 +39,9 @@ ssize_t sp_write_console(sp_fd_t fd, void *buf, size_t size);
 //将buff写入到文件
 ssize_t sp_write_fd(sp_fd_t fd, void *buf, size_t size);
 #define sp_write_fd_n              "WriteFile()"
+
+#define sp_close_file              CloseHandle
+#define sp_close_file_n            "CloseHandle()"
 
 #define sp_stdout               GetStdHandle(STD_OUTPUT_HANDLE)
 #define sp_stderr               GetStdHandle(STD_ERROR_HANDLE)
