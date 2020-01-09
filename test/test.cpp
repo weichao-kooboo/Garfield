@@ -481,8 +481,9 @@ static int open_output_file(const char *filename)
 	ofmt_ctx = NULL;
 #if USE_RTMP
 	avformat_alloc_output_context2(&ofmt_ctx, NULL, "flv", filename);
-#endif
+#else
 	avformat_alloc_output_context2(&ofmt_ctx, NULL, NULL, filename);
+#endif
 	if (!ofmt_ctx) {
 		av_log(NULL, AV_LOG_ERROR, "Could not create output context\n");
 		return AVERROR_UNKNOWN;
@@ -957,12 +958,12 @@ static int pushRTMPflv(int argc, const char *argv[]) {
 
 	const char *in_filename = "Vi.flv";
 
-	const char *out_filename = "my_test.flv";
-	//const char *out_filename = "rtmp://192.168.11.138:1935/cctvf";
+	//const char *out_filename = "my_test.flv";
+	const char *out_filename = "rtmp://101.133.165.238:1935/cctvf";
 	avformat_network_init();
 	avdevice_register_all();
 
-	const char *dshow_input_name = "video=XiaoMi USB 2.0 Webcam";
+	const char *dshow_input_name = "video=A4tech USB2.0 Camera";
 
 	open_input_file(dshow_input_name);
 
@@ -1059,8 +1060,8 @@ end:
 }
 
 int main(int argc, const char *argv[]) {
-	//pushRTMPflv(argc, argv);
-	parseFrame(argc, argv);
+	pushRTMPflv(argc, argv);
+	//parseFrame(argc, argv);
 }
 
 //int main(int argc, const char *argv[]) {
