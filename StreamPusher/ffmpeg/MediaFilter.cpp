@@ -6,7 +6,7 @@
 MediaFilter::MediaFilter(const weak_ptr<Logger> &logger) :
 	_logger(logger),
 	streams_count(0),
-	_filter_spec("drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='Lei Xiaohua'")
+	_filter_spec("drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='weichao'")
 {
 }
 
